@@ -1,0 +1,12 @@
+
+# bde.set
+# compilation.order
+# compile.cfg
+# Edfmap.ini
+# library.cfg
+
+*
+/*
+!.gitignore
+!README.md
+!src/
