@@ -366,7 +366,7 @@ elsif (Opcode(137 downto 136) = "11") then
 		   		end if;
   				end loop;
 		for l in 31 downto 0 loop
-    		if a(l) = '0' then
+    		if rs1(l) = '0' then
       		track4 := track4 + 1;
     		else
       		exit;
@@ -378,102 +378,102 @@ elsif (Opcode(137 downto 136) = "11") then
 		 output(31 downto 0):= std_logic_vector(to_unsigned(track4, 32)); 
 		--Max 
 	elsif (Opcode(135 downto 128) = "---00111")	then	
-		if (signed(a(31 downto 0)) >= signed(b(31 downto 0))) then
-			output(31 downto 0):= a(31 downto 0);
+		if (signed(rs1(31 downto 0)) >= signed(b(31 downto 0))) then
+			output(31 downto 0):= rs1(31 downto 0);
 		else
 			output(31 downto 0):= b(31 downto 0);
 		end if;	
-		if (signed(a(63 downto 32)) >= signed(b(63 downto 32))) then
-			output(63 downto 32):= a(63 downto 32);
+		if (signed(rs1(63 downto 32)) >= signed(b(63 downto 32))) then
+			output(63 downto 32):= rs1(63 downto 32);
 		else
 			output(63 downto 32):= b(63 downto 32);
 		end if;	
-		if (signed(a(95 downto 64)) >= signed(b(95 downto 64))) then
-			output(95 downto 64):= a(95 downto 64);
+		if (signed(rs1(95 downto 64)) >= signed(b(95 downto 64))) then
+			output(95 downto 64):= rs1(95 downto 64);
 		else
 			output(95 downto 64):= b(95 downto 64);
 		end if;	
-		if (signed(a(127 downto 96)) >= signed(b(127 downto 96))) then
-			output(127 downto 96):= a(127 downto 96);
+		if (signed(rs1(127 downto 96)) >= signed(b(127 downto 96))) then
+			output(127 downto 96):= rs1(127 downto 96);
 		else
 			output(127 downto 96):= b(127 downto 96);
 		end if;	
 		--Min	
 	elsif (Opcode(135 downto 128) = "---01000")	then	
-		if (signed(a(31 downto 0)) <= signed(b(31 downto 0))) then
-			output(31 downto 0):= a(31 downto 0);
+		if (signed(rs1(31 downto 0)) <= signed(b(31 downto 0))) then
+			output(31 downto 0):= rs1(31 downto 0);
 		else
 			output(31 downto 0):= b(31 downto 0);
 		end if;	
-		if (signed(a(63 downto 32)) <= signed(b(63 downto 32))) then
-			output(63 downto 32):= a(63 downto 32);
+		if (signed(rs1(63 downto 32)) <= signed(b(63 downto 32))) then
+			output(63 downto 32):= rs1(63 downto 32);
 		else
 			output(63 downto 32):= b(63 downto 32);
 		end if;	
-		if (signed(a(95 downto 64)) <= signed(b(95 downto 64))) then
-			output(95 downto 64):= a(95 downto 64);
+		if (signed(rs1(95 downto 64)) <= signed(b(95 downto 64))) then
+			output(95 downto 64):= rs1(95 downto 64);
 		else
 			output(95 downto 64):= b(95 downto 64);
 		end if;	
-		if (signed(a(127 downto 96)) <= signed(b(127 downto 96))) then
-			output(127 downto 96):= a(127 downto 96);
+		if (signed(rs1(127 downto 96)) <= signed(b(127 downto 96))) then
+			output(127 downto 96):= rs1(127 downto 96);
 		else
 			output(127 downto 96):= b(127 downto 96);
 		end if;
 		--MSGN
 	elsif (Opcode(135 downto 128) = "---01001")	then		
-		 output(31 downto 0):= std_logic_vector(to_signed(to_integer(signed(a(31 downto 0))) * to_integer(signed(b(31 downto 0))), 32));  
-		 output(63 downto 32):= std_logic_vector(to_signed(to_integer(signed(a(63 downto 32))) * to_integer(signed(b(63 downto 32))), 32)); 
-		 output(95 downto 64):= std_logic_vector(to_signed(to_integer(signed(a(95 downto 64))) * to_integer(signed(b(95 downto 64))), 32));
-		 output(127 downto 96):= std_logic_vector(to_signed(to_integer(signed(a(127 downto 96))) * to_integer(signed(b(127 downto 96))), 32));
+		 output(31 downto 0):= std_logic_vector(to_signed(to_integer(signed(rs1(31 downto 0))) * to_integer(signed(b(31 downto 0))), 32));  
+		 output(63 downto 32):= std_logic_vector(to_signed(to_integer(signed(rs1(63 downto 32))) * to_integer(signed(b(63 downto 32))), 32)); 
+		 output(95 downto 64):= std_logic_vector(to_signed(to_integer(signed(rs1(95 downto 64))) * to_integer(signed(b(95 downto 64))), 32));
+		 output(127 downto 96):= std_logic_vector(to_signed(to_integer(signed(rs1(127 downto 96))) * to_integer(signed(b(127 downto 96))), 32));
 		--MPYU 
 	elsif (Opcode(135 downto 128) = "---01010")	then		
-		 output(31 downto 0):= std_logic_vector(unsigned(a(15 downto 0)) * unsigned(b(15 downto 0)));  
-		 output(63 downto 32):= std_logic_vector(unsigned(a(47 downto 32)) * unsigned(b(47 downto 32)));   
-		 output(95 downto 64):= std_logic_vector(unsigned(a(79 downto 64)) * unsigned(b(79 downto 64)));   
-		 output(127 downto 96):= std_logic_vector(unsigned(a(111 downto 96)) * unsigned(b(111 downto 96)));	
+		 output(31 downto 0):= std_logic_vector(unsigned(rs1(15 downto 0)) * unsigned(b(15 downto 0)));  
+		 output(63 downto 32):= std_logic_vector(unsigned(rs1(47 downto 32)) * unsigned(b(47 downto 32)));   
+		 output(95 downto 64):= std_logic_vector(unsigned(rs1(79 downto 64)) * unsigned(b(79 downto 64)));   
+		 output(127 downto 96):= std_logic_vector(unsigned(rs1(111 downto 96)) * unsigned(b(111 downto 96)));	
 		 --Or
 	elsif (Opcode(135 downto 128) = "---01011")	then			
-		output := a or b;
+		output := rs1 or b;
 		--POPCNTH
 	elsif (Opcode(135 downto 128) = "---01100")	then
 		for i in 127 downto 112 loop
-    		if a(i) = '1' then
+    		if rs1(i) = '1' then
       		track1 := track1 + 1;
 		   		end if;
   				end loop;	
 		for j in 111 downto 96 loop
-    		if a(j) = '1' then
+    		if rs1(j) = '1' then
       		track2 := track2 + 1;
 		   		end if;
 				end loop;
 		for k in 95 downto 80 loop
-    		if a(k) = '1' then
+    		if rs1(k) = '1' then
       		track3 := track3 + 1;
 		   		end if;
   				end loop;
 		for l in 79 downto 64 loop
-    		if a(l) = '1' then
+    		if rs1(l) = '1' then
       		track4 := track4 + 1;
 				end if;
 				end loop;
 		for m in 63 downto 48 loop
-    		if a(m) = '1' then
+    		if rs1(m) = '1' then
       		track5 := track5 + 1;
 		   		end if;
   				end loop;	
 		for n in 47 downto 32 loop
-    		if a(n) = '1' then
+    		if rs1(n) = '1' then
       		track6 := track6 + 1;
 		   		end if;
 				end loop;
 		for o in 31 downto 16 loop
-    		if a(o) = '1' then
+    		if rs1(o) = '1' then
       		track7 := track7 + 1;
 		   		end if;
   				end loop;
 		for p in 15 downto 0 loop
-    		if a(p) = '1' then
+    		if rs1(p) = '1' then
       		track8 := track8 + 1;
 				end if;
 				end loop;
@@ -487,7 +487,7 @@ elsif (Opcode(137 downto 136) = "11") then
 		 output(127 downto 112):= std_logic_vector(to_unsigned(track1, 16));
 		--ROT
 	elsif (Opcode(135 downto 128) = "---01101")	then
-		output := a;
+		output := rs1;
     	for i in 1 to to_integer(unsigned(b(6 downto 0))) loop
 		temp:= output(0);
 		output(126 downto 0) :=	output(127 downto 1);
@@ -495,7 +495,7 @@ elsif (Opcode(137 downto 136) = "11") then
 		end loop;
 		--ROTW		    
 	elsif (Opcode(135 downto 128) = "---01110")	then
-		output := a;
+		output := rs1;
 		for i in 1 to to_integer(unsigned(b(5 downto 0))) loop
 		temp:= output(0);
 		output(30 downto 0) :=	output(31 downto 1);
@@ -521,7 +521,7 @@ elsif (Opcode(137 downto 136) = "11") then
 		end loop;
 	   --SHLHI
 	elsif (Opcode(135 downto 128) = "---01111")	then  
-		output := a;
+		output := rs1;
 		for i in 1 to to_integer(unsigned(b(3 downto 0))) loop
 		output(15 downto 0) :=	(output(14 downto 0) & '0');
 		end loop;
@@ -555,33 +555,33 @@ elsif (Opcode(137 downto 136) = "11") then
 		end loop;
 		--SFH
 	elsif (Opcode(135 downto 128) = "---10000")	then  
-		 output(15 downto 0):= std_logic_vector(unsigned(b(15 downto 0)) - unsigned(a(15 downto 0)));  
-		 output(31 downto 16):= std_logic_vector(unsigned(b(31 downto 16)) - unsigned(a(31 downto 16)));   
-		 output(47 downto 32):= std_logic_vector(unsigned(b(47 downto 32)) - unsigned(a(47 downto 32)));   
-		 output(63 downto 48):= std_logic_vector(unsigned(b(63 downto 48)) - unsigned(a(63 downto 48)));
-		 output(79 downto 64):= std_logic_vector(unsigned(b(79 downto 64)) - unsigned(a(79 downto 64)));  
-		 output(95 downto 80):= std_logic_vector(unsigned(b(95 downto 80)) - unsigned(a(95 downto 80)));   
-		 output(111 downto 96):= std_logic_vector(unsigned(b(111 downto 96)) - unsigned(a(111 downto 96)));   
-		 output(127 downto 112):= std_logic_vector(unsigned(b(127 downto 112)) - unsigned(a(127 downto 112)));
+		 output(15 downto 0):= std_logic_vector(unsigned(b(15 downto 0)) - unsigned(rs1(15 downto 0)));  
+		 output(31 downto 16):= std_logic_vector(unsigned(b(31 downto 16)) - unsigned(rs1(31 downto 16)));   
+		 output(47 downto 32):= std_logic_vector(unsigned(b(47 downto 32)) - unsigned(rs1(47 downto 32)));   
+		 output(63 downto 48):= std_logic_vector(unsigned(b(63 downto 48)) - unsigned(rs1(63 downto 48)));
+		 output(79 downto 64):= std_logic_vector(unsigned(b(79 downto 64)) - unsigned(rs1(79 downto 64)));  
+		 output(95 downto 80):= std_logic_vector(unsigned(b(95 downto 80)) - unsigned(rs1(95 downto 80)));   
+		 output(111 downto 96):= std_logic_vector(unsigned(b(111 downto 96)) - unsigned(rs1(111 downto 96)));   
+		 output(127 downto 112):= std_logic_vector(unsigned(b(127 downto 112)) - unsigned(rs1(127 downto 112)));
 		 --SFW
 	elsif (Opcode(135 downto 128) = "---10001")	then 
-		 output(31 downto 0):= std_logic_vector(unsigned(b(31 downto 0)) - unsigned(a(31 downto 0)));  
-		 output(63 downto 32):= std_logic_vector(unsigned(b(63 downto 32)) - unsigned(a(63 downto 32)));   
-		 output(95 downto 64):= std_logic_vector(unsigned(b(95 downto 64)) - unsigned(a(95 downto 64)));   
-		 output(127 downto 96):= std_logic_vector(unsigned(b(127 downto 96)) - unsigned(a(127 downto 96)));
+		 output(31 downto 0):= std_logic_vector(unsigned(b(31 downto 0)) - unsigned(rs1(31 downto 0)));  
+		 output(63 downto 32):= std_logic_vector(unsigned(b(63 downto 32)) - unsigned(rs1(63 downto 32)));   
+		 output(95 downto 64):= std_logic_vector(unsigned(b(95 downto 64)) - unsigned(rs1(95 downto 64)));   
+		 output(127 downto 96):= std_logic_vector(unsigned(b(127 downto 96)) - unsigned(rs1(127 downto 96)));
 		 --SFHS
 	elsif (Opcode(135 downto 128) = "---10010")	then 
-		 output(15 downto 0):= std_logic_vector(signed(b(15 downto 0)) - signed(a(15 downto 0)));  
-		 output(31 downto 16):= std_logic_vector(signed(b(31 downto 16)) - signed(a(31 downto 16)));   
-		 output(47 downto 32):= std_logic_vector(signed(b(47 downto 32)) - signed(a(47 downto 32)));   
-		 output(63 downto 48):= std_logic_vector(signed(b(63 downto 48)) - signed(a(63 downto 48)));
-		 output(79 downto 64):= std_logic_vector(signed(b(79 downto 64)) - signed(a(79 downto 64)));  
-		 output(95 downto 80):= std_logic_vector(signed(b(95 downto 80)) - signed(a(95 downto 80)));   
-		 output(111 downto 96):= std_logic_vector(signed(b(111 downto 96)) - signed(a(111 downto 96)));   
-		 output(127 downto 112):= std_logic_vector(signed(b(127 downto 112)) - signed(a(127 downto 112))); 
+		 output(15 downto 0):= std_logic_vector(signed(b(15 downto 0)) - signed(rs1(15 downto 0)));  
+		 output(31 downto 16):= std_logic_vector(signed(b(31 downto 16)) - signed(rs1(31 downto 16)));   
+		 output(47 downto 32):= std_logic_vector(signed(b(47 downto 32)) - signed(rs1(47 downto 32)));   
+		 output(63 downto 48):= std_logic_vector(signed(b(63 downto 48)) - signed(rs1(63 downto 48)));
+		 output(79 downto 64):= std_logic_vector(signed(b(79 downto 64)) - signed(rs1(79 downto 64)));  
+		 output(95 downto 80):= std_logic_vector(signed(b(95 downto 80)) - signed(rs1(95 downto 80)));   
+		 output(111 downto 96):= std_logic_vector(signed(b(111 downto 96)) - signed(rs1(111 downto 96)));   
+		 output(127 downto 112):= std_logic_vector(signed(b(127 downto 112)) - signed(rs1(127 downto 112))); 
 		 --XOR
 	elsif (Opcode(135 downto 128) = "---10011")	then 
-		output:= a xor b;
+		output:= rs1 xor b;
 		
 	end if R3;
 	
