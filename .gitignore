@@ -1,17 +1,20 @@
 
-bde.set
-compilation.order
-compile.cfg
-Edfmap.ini
-projlib.cfg
-library.cfg
-SIMD_Multimedia_Unit
-SIMD_Multimedia_Unit.adf
-SIMD_Multimedia_Unit.wsp
-stimulators.set
-synthesis.order
+# bde.set
+# compilation.order
+# compile.cfg
+# Edfmap.ini
+# projlib.cfg
+# library.cfg
+# SIMD_Multimedia_Unit
+# SIMD_Multimedia_Unit.adf
+# SIMD_Multimedia_Unit.wsp
+# stimulators.set
+# synthesis.order
 
-compile/
-log/
-SIMD_Multimedia_Unit/
+# compile/
+# log/
+# SIMD_Multimedia_Unit/
 
+
+*
+!src/
