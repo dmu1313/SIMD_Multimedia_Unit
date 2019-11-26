@@ -17,4 +17,6 @@
 
 
 *
+!.gitignore
+!README.md
 !src/

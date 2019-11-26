@@ -73,7 +73,7 @@ elsif (Opcode(137 downto 136) = "10") then
 		 output(63 downto 32):= std_logic_vector(signed(Opcode(47 downto 32)) * signed(b(47 downto 32))); 
 		 output(95 downto 64):= std_logic_vector(signed(Opcode(79 downto 64)) * signed(b(79 downto 64)));
 		 output(127 downto 96):= std_logic_vector(signed(Opcode(111 downto 96)) * signed(b(111 downto 96)));
-		 
+		 a
 		 if	 ( to_integer(signed(rs1(31 downto 0)) + signed(output(31 downto 0))) > 2147483647 ) then 
 			 output(31 downto 0):= std_logic_vector(to_signed(2147483647, 32));  
 		 elsif ( to_integer(signed(rs1(31 downto 0)) + signed(output(31 downto 0))) < -2147483648 ) then
