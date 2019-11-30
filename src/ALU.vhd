@@ -29,7 +29,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity ALU is
 	 port(
 		 rs1 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs1
-		 b : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs2
+		 rs2 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs2
 		 rs3
 		 Opcode : in STD_LOGIC_VECTOR(137 downto 0);   -- opcode is 137 downto 128 and rs3 is 127 downto 0
 		 c : out STD_LOGIC_VECTOR(127 downto 0)
