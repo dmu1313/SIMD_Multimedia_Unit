@@ -84,8 +84,17 @@ public class Assembler {
 	};
 	
 	public static void main(String [] args) {
-		Scanner sc = new Scanner(readFile);
-		File f = null;
+		File f = new File(readFile);
+		Scanner sc = null;
+		
+		try {
+			sc = new Scanner(f);
+		}
+		catch(FileNotFoundException e) {
+			System.out.println("Could not find input file.");
+			return;
+		}
+		
 		FileOutputStream fos = null;
 		OutputStreamWriter ow = null;
 		BufferedWriter bw = null;
@@ -99,10 +108,6 @@ public class Assembler {
 			System.out.println("Failed to create output writer.");
 			return;
 		}
-		
-		
-		char writeBuffer[] = new char[26];
-		writeBuffer[25] = '\n';
 		
 		HashSet<String> R3 = new HashSet<String>();
 		HashSet<String> R4 = new HashSet<String>();
