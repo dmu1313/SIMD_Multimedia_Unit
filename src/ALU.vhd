@@ -46,7 +46,6 @@ begin
 	variable tempA , tempB , tempC, tempD: integer;
 	variable track1, track2, track3, track4, track5, track6, track7, track8 : natural:= 0;
 	begin 
-		c <= output;
 		-- For Load immediate
 		Instruction_Format: if (Opcode(9 downto 8) = "0-" ) then
 			--Load Immediate based on index
@@ -66,7 +65,9 @@ begin
 			elsif (Opcode(8 downto 0) = "110------")then
 				output(111 downto 96):= rs2(15 downto 0);
 			elsif (Opcode(8 downto 0) = "111------")then
-				 output(127 downto 112):= rs2(15 downto 0); 
+				output(127 downto 112):= rs2(15 downto 0); 
+			else
+				output := std_logic_vector(to_unsigned(11, 128));
 			end if;
 					
 		-- For Multiplication/division with adding/subtracting
@@ -610,8 +611,11 @@ begin
 				--XOR
 			elsif (Opcode(7 downto 0) = "---10011")	then 
 				output:= rs1 xor rs2;
-				
-			end if R3
+			end if R3;
+		else
+			output := std_logic_vector(to_unsigned(10, 128));
 		end if Instruction_Format;
+
+		c <= output;
 	end process;
 end behavior;

@@ -80,7 +80,7 @@ variable expected : std_logic_vector(127 downto 0);
 				
 --				expected:= c_tb;
 --			end loop;
-	std.env.finish;
+	wait;
 	end process stim;
 
 end ALUTestBench;
