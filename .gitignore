@@ -16,7 +16,8 @@
 # SIMD_Multimedia_Unit/
 
 
-*
+/*
+/*/
 !.gitignore
 !README.md
-!src/
+!/src/
