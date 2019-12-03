@@ -44,43 +44,43 @@ architecture ALUTestBench of ALUTestBench is
 	
 	begin
 	  UUT : entity ALU
-	port map ( 
-	rs1 => rs1_tb,
-	rs2 => rs2_tb,
-	rs3 => rs3_tb,
-	rd => rd_tb,
-	Opcode => Opcode_tb,
-	c => c_tb);	
+	port map (
+		rs1 => rs1_tb,
+		rs2 => rs2_tb,
+		rs3 => rs3_tb,
+		rd => rd_tb,
+		Opcode => Opcode_tb,
+		c => c_tb
+	);
 --327865
-stim:process
-variable expected : std_logic_vector(127 downto 0);
+	stim:process
+		variable expected : std_logic_vector(127 downto 0);
 	begin
-	rs1_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_1000000000000000";
-	rs2_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_1000000000000001"; 
-	rs3_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101";
-	rd_tb 	<= b"0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000";
-	
---	Opcode_tb <= "0000010000";	
---	wait for 5ns;
---	
---	Opcode_tb(9 downto 8) <="10"; 
---	Opcode_tb(4 downto 0) <="00000";
---	
---			for i in 0 to 7 loop
---			(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5)) <= (to_unsigned(i,3)); 
---			wait for 5ns; 	
---			end loop;
+		rs1_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_1000000000000000";
+		rs2_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_1000000000000001"; 
+		rs3_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101";
+		rd_tb 	<= b"0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000";
+		
+	--	Opcode_tb <= "0000010000";	
+	--	wait for 5ns;
+	--	
+	--	Opcode_tb(9 downto 8) <="10"; 
+	--	Opcode_tb(4 downto 0) <="00000";
+	--	
+	--			for i in 0 to 7 loop
+	--			(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5)) <= (to_unsigned(i,3)); 
+	--			wait for 5ns; 	
+	--			end loop;
 
-	Opcode_tb <= b"10_000_01001";
+		Opcode_tb <= b"10_000_01001";
 
---	Opcode_tb(9 downto 8) <="11";  
---			for i in 1 to 19 loop
---				(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5), Opcode_tb(4), Opcode_tb(3), Opcode_tb(2), Opcode_tb(1), Opcode_tb(0)) <= (to_unsigned(i,8)); 
---				wait for 5ns;
---				
---				expected:= c_tb;
---			end loop;
-	wait;
-	end process stim;
-
+	--	Opcode_tb(9 downto 8) <="11";  
+	--			for i in 1 to 19 loop
+	--				(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5), Opcode_tb(4), Opcode_tb(3), Opcode_tb(2), Opcode_tb(1), Opcode_tb(0)) <= (to_unsigned(i,8)); 
+	--				wait for 5ns;
+	--				
+	--				expected:= c_tb;
+	--			end loop;
+		wait;
+	end process stim
 end ALUTestBench;
