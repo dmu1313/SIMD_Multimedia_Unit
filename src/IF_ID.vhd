@@ -27,25 +27,28 @@ use IEEE.std_logic_1164.all;
 use IEEE.NUMERIC_STD.ALL; 
 
 entity IF_ID is
+	generic (
+		INSTR_WIDTH : positive := 25
+	);
 	 port(
-	 	 CLK : in STD_LOGIC;
-	 	 rst: in STD_LOGiC;
-		 Ins_In : in STD_LOGIC_VECTOR(24 downto 0);
-		 Ins_Out : out STD_LOGIC_VECTOR(24 downto 0)
-	     );
+			clk : in STD_LOGIC;
+			rst: in STD_LOGiC;
+			Ins_In : in STD_LOGIC_VECTOR(INSTR_WIDTH-1 downto 0);
+			Ins_Out : out STD_LOGIC_VECTOR(INSTR_WIDTH-1 downto 0)
+		);
 end IF_ID;
 
---}} End of automatically maintained section
-
 architecture behavior of IF_ID is
+	signal pipeline_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
 begin
-	process(CLK, rst)
+	process(clk, rst)
 	begin
-		if rst = '1' then 
-			Ins_Out <= std_logic_vector(to_unsigned(0, 25));
-		elsif rising_edge(CLK)	then 
-		   Ins_Out <= Ins_In;
+		if rst = '1' then
+			Ins_Out <= std_logic_vector(to_unsigned(0, INSTR_WIDTH-1));
+			pipeline_instr <= std_logic_vector(to_unsigned(0, INSTR_WIDTH-1));
+		elsif rising_edge(clk)	then
+			Ins_Out <= pipeline_instr;
+			pipeline_instr <= Ins_In;
 		end if;
-	
    end process;
 end behavior;

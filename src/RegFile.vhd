@@ -28,7 +28,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity RegFile is
 	 port(
-			CLK : in STD_LOGIC;
+			clk : in STD_LOGIC;
 			rs1_sel : in STD_LOGIC_VECTOR(4 downto 0);
 			rs2_sel : in STD_LOGIC_VECTOR(4 downto 0);
 			rs3_sel : in STD_LOGIC_VECTOR(4 downto 0);
@@ -46,9 +46,9 @@ architecture behavior of RegFile is
 	type RegisterFile is array (0 to 31) of STD_LOGIC_VECTOR(127 downto 0);
 	signal registers  : RegisterFile;
 begin
-	process(CLK)
+	process(clk)
 	begin
-		if rising_edge(CLK)	then  
+		if rising_edge(clk)	then  
 -- Reading the registers selected before bypassing
 			rs1_out <= registers(to_integer(unsigned(rs1_sel)));
 			rs2_out <= registers(to_integer(unsigned(rs2_sel)));

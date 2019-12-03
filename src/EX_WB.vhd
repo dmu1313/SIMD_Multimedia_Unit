@@ -12,42 +12,45 @@
 -- From        : interface description file
 -- By          : Itf2Vhdl ver. 1.22
 --
--------------------------------------------------------------------------------
---
--- Description : 
---
--------------------------------------------------------------------------------
 
---{{ Section below this comment is automatically maintained
---   and may be overwritten
---{entity {EX_WB} architecture {EX_WB}}
 
 library IEEE;
 use IEEE.std_logic_1164.all; 
 use IEEE.NUMERIC_STD.ALL;
 
 entity EX_WB is
-	 port(
-	 	 CLK : in STD_LOGIC;
-	 	 Ins_In : in STD_LOGIC_VECTOR(24 downto 0);
-		 Ins_Out : out STD_LOGIC_VECTOR(24 downto 0);
-		 rd_In : in STD_LOGIC_VECTOR(127 downto 0);	
-		 rst : in std_logic;
-		 rd_Out : out STD_LOGIC_VECTOR(127 downto 0)
-	     );
+	generic (
+		INSTR_WIDTH : positive := 25;
+		REG_WIDTH : positive := 128
+	);
+	port(
+		clk : in STD_LOGIC;
+		Ins_In : in STD_LOGIC_VECTOR(INSTR_WIDTH-1 downto 0);
+		rd_In : in STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);
+		rst : in std_logic;
+		Ins_Out : out STD_LOGIC_VECTOR(INSTR_WIDTH-1 downto 0);
+		rd_Out : out STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0)
+	);
 end EX_WB;
 
---}} End of automatically maintained section
-
 architecture behavior of EX_WB is
+	signal pipeline_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
+	signal pipeline_rd : std_logic_vector(REG_WIDTH-1 downto 0);
 begin
-	process(CLK, rst)
+	process(clk, rst)
 	begin
 		if rst = '1' then 
-			Ins_Out <= std_logic_vector(to_unsigned(0, 25)); 
-			rd_Out <= std_logic_vector(to_unsigned(0, 128));
-		elsif rising_edge(CLK) then
-			rd_Out <= rd_In;
+			Ins_Out <= std_logic_vector(to_unsigned(0, INSTR_WIDTH));
+			rd_Out <= std_logic_vector(to_unsigned(0, REG_WIDTH));
+
+			pipeline_instr <= std_logic_vector(to_unsigned(0, INSTR_WIDTH));
+			pipeline_rd <= std_logic_vector(to_unsigned(0, REG_WIDTH));
+		elsif rising_edge(clk) then
+			Ins_Out <= pipeline_instr;
+			rd_Out <= pipeline_rd;
+
+			pipeline_instr <= Inst_In;
+			pipeline_rd <= rd_In;
 		end if;
    end process;
 end behavior;

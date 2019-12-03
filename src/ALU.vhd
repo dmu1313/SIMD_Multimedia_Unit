@@ -27,14 +27,18 @@ use IEEE.std_logic_1164.all;
 use IEEE.NUMERIC_STD.ALL; 
 
 entity ALU is
-	 port(
-		 rs1 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs1
-		 rs2 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs2
-		 rs3 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs3
-		 rd  : in STD_Logic_vector(127 downto 0);		   -- rd
-		 Opcode : in STD_LOGIC_VECTOR(9 downto 0);   	   -- opcode
-		 c : out STD_LOGIC_VECTOR(127 downto 0)
-	     );
+	generic (
+		REG_WIDTH : positive := 128;
+		ALU_OP_WIDTH : positive := 10
+	);
+	port(
+		rs1 : in STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);		   -- rs1
+		rs2 : in STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);		   -- rs2
+		rs3 : in STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);		   -- rs3
+		rd  : in STD_Logic_vector(REG_WIDTH-1 downto 0);		   -- rd
+		Opcode : in STD_LOGIC_VECTOR(ALU_OP_WIDTH-1 downto 0);   	   -- opcode
+		c : out STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0)
+	);
 end ALU;
 
 architecture behavior of ALU is

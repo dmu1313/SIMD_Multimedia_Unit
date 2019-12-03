@@ -28,8 +28,8 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity Instruction_Buffer is
 	generic (
-		n : positive := 6,
-		INSTR_BUF_SIZE : positive := 64,
+		n : positive := 6;
+		INSTR_BUF_SIZE : positive := 64;
 		INSTR_WIDTH : positive := 25
 	);
 	port(
@@ -40,8 +40,6 @@ entity Instruction_Buffer is
 		instruction_out : out STD_LOGIC_VECTOR(INSTR_WIDTH-1 downto 0)
 	);
 end Instruction_Buffer;
-
---}} End of automatically maintained section
 
 architecture behavior of Instruction_Buffer is
 	type InstructionBuffer is array (0 to INSTR_BUF_SIZE) of STD_LOGIC_VECTOR(INSTR_WIDTH-1 downto 0);
