@@ -82,5 +82,4 @@ variable expected : std_logic_vector(127 downto 0);
 			end loop;
 --	wait;
 	end process stim;
-
 end ALUTestBench;
