@@ -2,6 +2,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
 entity Processor is
 	generic (
@@ -11,19 +12,18 @@ entity Processor is
 		LOG_NUM_REG : positive := 5;
 		REG_WIDTH : positive := 128;
 		ALU_OP_WIDTH : positive := 10;
-		R3_OPCODE_WIDTH : positive := 8;
+		R3_OPCODE_WIDTH : positive := 8
 	);
 	port(
 			clk : in std_logic;
 			reset : in std_logic;
 			load : in std_logic;
-			instruction_in : in std_logic_vector(INSTR_WIDTH-1 downto 0);
+			instruction_in : in std_logic_vector(INSTR_WIDTH-1 downto 0)
 
 		);
 end Processor;
 
-architecture Processor of Processor is
-	constant NOT_VALID : std_logic_vector(INSTR_)
+architecture Processor of Processor is			  
 	constant NOP_BINARY : std_logic_vector(INSTR_WIDTH-1 downto 0) := b"1_1000_0000_0000_0000_0000_0000";
 
 	signal addr : std_logic_vector (n-1 downto 0);
@@ -68,7 +68,7 @@ begin
 
 		rs2_sel <= IF_ID_instr_out(14 downto 10);
 		rs3_sel <= IF_ID_instr_out(19 downto 15);
-	end process read_rd;
+	end process rs_sel;
 
 	u4: entity RegFile port map(
 			clk=>clk,
@@ -107,7 +107,7 @@ begin
 		else
 			ALU_rs2_in <= ID_EX_rs2_out;
 		end if;
-	end process alu_opcode;
+	end process alu_inputs;
 
 	u6: entity ALU port map(
 		rs1=>ALU_rs1_in,
@@ -134,7 +134,7 @@ begin
 								or (ID_EX_instr_out(24 downto 23) = "10")
 								or ((ID_EX_instr_out(24 downto 23) = "11")-- and (not (ID_EX_instr_out = NOP_BINARY))
 																			and (EX_WB_instr_out_r3_op < 20)
-																			and (EX_WB_instr_out_r3_op > 0))
+																			and (EX_WB_instr_out_r3_op > 0)) else
 					'0';
 
 	-- u8: entity Forwarding_Unit port map(clk=>clk, reset_bar=>reset_bar, d=>step, q=>triangle_output);

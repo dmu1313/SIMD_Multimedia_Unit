@@ -49,7 +49,7 @@ begin
 			Ins_Out <= pipeline_instr;
 			rd_Out <= pipeline_rd;
 
-			pipeline_instr <= Inst_In;
+			pipeline_instr <= Ins_In;
 			pipeline_rd <= rd_In;
 		end if;
    end process;
