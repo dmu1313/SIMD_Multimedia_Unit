@@ -30,9 +30,9 @@ entity ALU is
 	 port(
 		 rs1 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs1
 		 rs2 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs2
-		 rs3 : in STD_LOGIC_VECTOR(127 downto 0);
-		 rd  : in STD_Logic_vector(127 downto 0);
-		 Opcode : in STD_LOGIC_VECTOR(9 downto 0);   -- opcode is 137 downto 128 and rs3 is 127 downto 0
+		 rs3 : in STD_LOGIC_VECTOR(127 downto 0);		   -- rs3
+		 rd  : in STD_Logic_vector(127 downto 0);		   -- rd
+		 Opcode : in STD_LOGIC_VECTOR(9 downto 0);   	   -- opcode
 		 c : out STD_LOGIC_VECTOR(127 downto 0)
 	     );
 end ALU;
@@ -43,28 +43,35 @@ begin
 	process(rs1, rs2, rs3, Opcode)
 	variable output: STD_logic_vector(127 downto 0);	
 	variable temp : std_logic;
-	variable tempA , tempB , tempC, tempD: integer;
+	variable tempA , tempB , tempC, tempD, tempE, tempF, tempG, tempH: signed (64 downto 0);
+	variable min16: signed (15 downto 0) := signed(b"1000_0000_0000_0000");
+	variable max16: signed (15 downto 0) := signed(b"0111_1111_1111_1111");
+	variable min32: signed (31 downto 0) := signed(b"1000_0000_0000_0000_0000_0000_0000_0000");
+	variable max32: signed (31 downto 0) := signed(b"0111_1111_1111_1111_1111_1111_1111_1111");
+	variable min: signed (63 downto 0) := signed(b"1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000");
+	variable max: signed (63 downto 0) := signed(b"0111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111");
 	variable track1, track2, track3, track4, track5, track6, track7, track8 : natural:= 0;
+	variable test : signed (63 downto 0);
 	begin 
 		-- For Load immediate
-		Instruction_Format: if (Opcode(9 downto 8) = "0-" ) then
+Instruction:if (Opcode(9)= '0')  then
 			--Load Immediate based on index
 			output := rd;
-			if (Opcode(8 downto 0) = "000------")then
+			if (Opcode(8 downto 6) = "000")then
 				output(15 downto 0):= rs2(15 downto 0);
-			elsif (Opcode(8 downto 0) = "001------")then
+			elsif (Opcode(8 downto 6) = "001")then
 				output(31 downto 16):= rs2(15 downto 0); 
-			elsif (Opcode(8 downto 0) = "010------")then
+			elsif (Opcode(8 downto 6) = "010")then
 				output(47 downto 32):= rs2(15 downto 0);
-			elsif (Opcode(8 downto 0) = "011------")then
+			elsif (Opcode(8 downto 6) = "011")then
 				output(63 downto 48):= rs2(15 downto 0);
-			elsif (Opcode(8 downto 0) = "100------")then
+			elsif (Opcode(8 downto 6) = "100")then
 				output(79 downto 64):= rs2(15 downto 0);
-			elsif (Opcode(8 downto 0) = "101------")then
+			elsif (Opcode(8 downto 6) = "101")then
 				output(95 downto 80):= rs2(15 downto 0); 
-			elsif (Opcode(8 downto 0) = "110------")then
+			elsif (Opcode(8 downto 6) = "110")then
 				output(111 downto 96):= rs2(15 downto 0);
-			elsif (Opcode(8 downto 0) = "111------")then
+			elsif (Opcode(8 downto 6) = "111")then
 				output(127 downto 112):= rs2(15 downto 0); 
 			else
 				output := std_logic_vector(to_unsigned(11, 128));
@@ -73,277 +80,278 @@ begin
 		-- For Multiplication/division with adding/subtracting
 		elsif (Opcode(9 downto 8) = "10") then
 			--Signed Integer Multiply-ADD LOW with Saturation
-			R4: if(Opcode(7 downto 0) = "000-----") then
+			R4: if(Opcode(7 downto 5) = "000") then
 				output(31 downto 0):= std_logic_vector(signed(rs3(15 downto 0)) * signed(rs2(15 downto 0)));  
 				output(63 downto 32):= std_logic_vector(signed(rs3(47 downto 32)) * signed(rs2(47 downto 32))); 
 				output(95 downto 64):= std_logic_vector(signed(rs3(79 downto 64)) * signed(rs2(79 downto 64)));
 				output(127 downto 96):= std_logic_vector(signed(rs3(111 downto 96)) * signed(rs2(111 downto 96)));	
 				  
-				tempA := to_integer(signed(rs1(31 downto 0)) + signed(output(31 downto 0)));
-				if	 (tempA > 2147483647 ) then 
-					output(31 downto 0):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempA < -2147483648 ) then
-					output(31 downto 0):= std_logic_vector(to_signed(-2147483648, 32));
+				tempA := resize(signed(rs1(31 downto 0)), 65) + resize(signed(output(31 downto 0)),65);
+				if	 (tempA > max32 ) then 
+					output(31 downto 0):= std_logic_vector(max32);  
+				elsif (tempA < min32 ) then
+					output(31 downto 0):= std_logic_vector(min32);
 				else
 					output(31 downto 0):= std_logic_vector(signed(rs1(31 downto 0)) + signed(output(31 downto 0))); 
 				end if;
 				
-				tempB := to_integer(signed(rs1(63 downto 32)) + signed(output(63 downto 32)));
-				if	 (tempB > 2147483647 ) then 
-					output(63 downto 32):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempB < -2147483648 )	then
-					output(63 downto 32):= std_logic_vector(to_signed(-2147483648, 32));
+				tempB := resize(signed(rs1(63 downto 32)), 65) + resize(signed(output(63 downto 32)), 65);
+				if	 (tempB > max32 ) then 
+					output(63 downto 32):= std_logic_vector(max32);  
+				elsif (tempB < min32 )	then
+					output(63 downto 32):= std_logic_vector(min32);
 				else
 					output(63 downto 32):= std_logic_vector(signed(rs1(63 downto 32)) + signed(output(63 downto 32)));
 				end if;
 				
-				tempC := to_integer(signed(rs1(95 downto 64)) + signed(output(95 downto 64)));
-				if	 (tempC > 2147483647 ) then 
-					output(95 downto 64):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempC < -2147483648 )	then
-					output(95 downto 64):= std_logic_vector(to_signed(-2147483648, 32));
+				tempC := resize(signed(rs1(95 downto 64)), 65) + resize(signed(output(95 downto 64)), 65);
+				if	 (tempC > max32 ) then 
+					output(95 downto 64):= std_logic_vector(max32);  
+				elsif (tempC < min32 )	then
+					output(95 downto 64):= std_logic_vector(min32);
 				else 
 					output(95 downto 64):= std_logic_vector(signed(rs1(95 downto 64)) +  signed(output(95 downto 64)));
 				end if;
 				 
-				tempD := to_integer(signed(rs1(127 downto 96)) + signed(output(127 downto 96)));
-				if	 (tempD > 2147483647 ) then 
-					output(127 downto 96):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempD < -2147483648 )	then
-					output(127 downto 96):= std_logic_vector(to_signed(-2147483648, 32));
+				tempD := resize(signed(rs1(127 downto 96)), 65) + resize(signed(output(127 downto 96)), 65);
+				if	 (tempD > max32 ) then 
+					output(127 downto 96):= std_logic_vector(max32);  
+				elsif (tempD < min32 )	then
+					output(127 downto 96):= std_logic_vector(min32);
 				else 
 					output(127 downto 96):= std_logic_vector(signed(rs1(127 downto 96)) + signed(output(127 downto 96)));
 				end if;	
 			-- Signed Integer Multiply-Add High with Saturation:
-			elsif (Opcode(7 downto 0) = "001-----") then	  
+			elsif (Opcode(7 downto 5) = "001") then	  
 				output(31 downto 0):= std_logic_vector(signed(rs3(31 downto 16)) * signed(rs2(31 downto 16)));  
 				output(63 downto 32):= std_logic_vector(signed(rs3(63 downto 48)) * signed(rs2(63 downto 48))); 
 				output(95 downto 64):= std_logic_vector(signed(rs3(95 downto 80)) * signed(rs2(95 downto 80)));
 				output(127 downto 96):= std_logic_vector(signed(rs3(127 downto 112)) * signed(rs2(127 downto 112)));
 				
-				tempA := to_integer(signed(rs1(31 downto 0)) + signed(output(31 downto 0)));
-				if	 (tempA > 2147483647 ) then 
-					output(31 downto 0):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempA < -2147483648 ) then
-					output(31 downto 0):= std_logic_vector(to_signed(-2147483648, 32));
+				tempA := resize(signed(rs1(31 downto 0)), 65) + resize(signed(output(31 downto 0)),65);
+				if	 (tempA > max32 ) then 
+					output(31 downto 0):= std_logic_vector(max32);  
+				elsif (tempA < min32 ) then
+					output(31 downto 0):= std_logic_vector(min32);
 				else
 					output(31 downto 0):= std_logic_vector(signed(rs1(31 downto 0)) + signed(output(31 downto 0))); 
 				end if;
 				
-				tempB := to_integer(signed(rs1(63 downto 32)) + signed(output(63 downto 32)));
-				if	 (tempB > 2147483647 ) then 
-					output(63 downto 32):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempB < -2147483648 )	then
-					output(63 downto 32):= std_logic_vector(to_signed(-2147483648, 32));
+				tempB := resize(signed(rs1(63 downto 32)), 65) + resize(signed(output(63 downto 32)), 65);
+				if	 (tempB > max32 ) then 
+					output(63 downto 32):= std_logic_vector(max32);  
+				elsif (tempB < min32 )	then
+					output(63 downto 32):= std_logic_vector(min32);
 				else
 					output(63 downto 32):= std_logic_vector(signed(rs1(63 downto 32)) + signed(output(63 downto 32)));
 				end if;
 				
-				tempC := to_integer(signed(rs1(95 downto 64)) + signed(output(95 downto 64)));
-				if	 (tempC > 2147483647 ) then 
-					output(95 downto 64):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempC < -2147483648 )	then
-					output(95 downto 64):= std_logic_vector(to_signed(-2147483648, 32));
+				tempC := resize(signed(rs1(95 downto 64)), 65) + resize(signed(output(95 downto 64)), 65);
+				if	 (tempC > max32 ) then 
+					output(95 downto 64):= std_logic_vector(max32);  
+				elsif (tempC < min32 )	then
+					output(95 downto 64):= std_logic_vector(min32);
 				else 
 					output(95 downto 64):= std_logic_vector(signed(rs1(95 downto 64)) +  signed(output(95 downto 64)));
 				end if;
-				
-				tempD := to_integer(signed(rs1(127 downto 96)) + signed(output(127 downto 96)));
-				if	 (tempD > 2147483647 ) then 
-					output(127 downto 96):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempD < -2147483648 )	then
-					output(127 downto 96):= std_logic_vector(to_signed(-2147483648, 32));
+				 
+				tempD := resize(signed(rs1(127 downto 96)), 65) + resize(signed(output(127 downto 96)), 65);
+				if	 (tempD > max32 ) then 
+					output(127 downto 96):= std_logic_vector(max32);  
+				elsif (tempD < min32 )	then
+					output(127 downto 96):= std_logic_vector(min32);
 				else 
 					output(127 downto 96):= std_logic_vector(signed(rs1(127 downto 96)) + signed(output(127 downto 96)));
-				end if;
+				end if;	
 			-- Signed Integer Multiply-Subtract Low with Saturation:
-			elsif(Opcode(7 downto 0) = "010-----") then		
+			elsif(Opcode(7 downto 5) = "010") then		
 				output(31 downto 0):= std_logic_vector(signed(rs3(15 downto 0)) * signed(rs2(15 downto 0)));  
 				output(63 downto 32):= std_logic_vector(signed(rs3(47 downto 32)) * signed(rs2(47 downto 32))); 
 				output(95 downto 64):= std_logic_vector(signed(rs3(79 downto 64)) * signed(rs2(79 downto 64)));
 				output(127 downto 96):= std_logic_vector(signed(rs3(111 downto 96)) * signed(rs2(111 downto 96)));	  
 				
-				tempA := to_integer(signed(rs1(31 downto 0)) - signed(output(31 downto 0)));
-				if	 (tempA > 2147483647 ) then 
-					output(31 downto 0):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempA < -2147483648 ) then
-					output(31 downto 0):= std_logic_vector(to_signed(-2147483648, 32));
+				tempA := resize(signed(rs1(31 downto 0)), 65) - resize(signed(output(31 downto 0)),65);
+				if	 (tempA > max32 ) then 
+					output(31 downto 0):= std_logic_vector(max32);  
+				elsif (tempA < min32 ) then
+					output(31 downto 0):= std_logic_vector(min32);
 				else
-					output(31 downto 0):= std_logic_vector(signed(rs1(31 downto 0)) + signed(output(31 downto 0))); 
+					output(31 downto 0):= std_logic_vector(signed(rs1(31 downto 0)) - signed(output(31 downto 0))); 
 				end if;
 				
-				tempB := to_integer(signed(rs1(63 downto 32)) - signed(output(63 downto 32)));
-				if	 (tempB > 2147483647 ) then 
-					output(63 downto 32):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempB < -2147483648 )	then
-					output(63 downto 32):= std_logic_vector(to_signed(-2147483648, 32));
+				tempB := resize(signed(rs1(63 downto 32)), 65) - resize(signed(output(63 downto 32)), 65);
+				if	 (tempB > max32 ) then 
+					output(63 downto 32):= std_logic_vector(max32);  
+				elsif (tempB < min32 )	then
+					output(63 downto 32):= std_logic_vector(min32);
 				else
-					output(63 downto 32):= std_logic_vector(signed(rs1(63 downto 32)) + signed(output(63 downto 32)));
+					output(63 downto 32):= std_logic_vector(signed(rs1(63 downto 32)) - signed(output(63 downto 32)));
 				end if;
 				
-				tempC := to_integer(signed(rs1(95 downto 64)) - signed(output(95 downto 64)));
-				if	 (tempC > 2147483647 ) then 
-					output(95 downto 64):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempC < -2147483648 )	then
-					output(95 downto 64):= std_logic_vector(to_signed(-2147483648, 32));
+				tempC := resize(signed(rs1(95 downto 64)), 65) - resize(signed(output(95 downto 64)), 65);
+				if	 (tempC > max32 ) then 
+					output(95 downto 64):= std_logic_vector(max32);  
+				elsif (tempC < min32 )	then
+					output(95 downto 64):= std_logic_vector(min32);
 				else 
-					output(95 downto 64):= std_logic_vector(signed(rs1(95 downto 64)) +  signed(output(95 downto 64)));
+					output(95 downto 64):= std_logic_vector(signed(rs1(95 downto 64)) -  signed(output(95 downto 64)));
 				end if;
-				
-				tempD := to_integer(signed(rs1(127 downto 96)) - signed(output(127 downto 96)));
-				if	 (tempD > 2147483647 ) then 
-					output(127 downto 96):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempD < -2147483648 )	then
-					output(127 downto 96):= std_logic_vector(to_signed(-2147483648, 32));
+				 
+				tempD := resize(signed(rs1(127 downto 96)), 65) - resize(signed(output(127 downto 96)), 65);
+				if	 (tempD > max32 ) then 
+					output(127 downto 96):= std_logic_vector(max32);  
+				elsif (tempD < min32 )	then
+					output(127 downto 96):= std_logic_vector(min32);
 				else 
-					output(127 downto 96):= std_logic_vector(signed(rs1(127 downto 96)) + signed(output(127 downto 96)));
-				end if;
+					output(127 downto 96):= std_logic_vector(signed(rs1(127 downto 96)) - signed(output(127 downto 96)));
+				end if;	
 			-- Signed Integer Multiply-Subtract HIGH with Saturation:
-			elsif(Opcode(7 downto 0) = "011-----") then 
+			elsif(Opcode(7 downto 5) = "011") then 
 				output(31 downto 0):= std_logic_vector(signed(rs3(31 downto 16)) * signed(rs2(31 downto 16)));  
 				output(63 downto 32):= std_logic_vector(signed(rs3(63 downto 48)) * signed(rs2(63 downto 48))); 
 				output(95 downto 64):= std_logic_vector(signed(rs3(95 downto 80)) * signed(rs2(95 downto 80)));
 				output(127 downto 96):= std_logic_vector(signed(rs3(127 downto 112)) * signed(rs2(127 downto 112)));
 					
-				tempA := to_integer(signed(rs1(31 downto 0)) - signed(output(31 downto 0)));
-				if	 (tempA > 2147483647 ) then 
-					output(31 downto 0):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempA < -2147483648 ) then
-					output(31 downto 0):= std_logic_vector(to_signed(-2147483648, 32));
+				tempA := resize(signed(rs1(31 downto 0)), 65) - resize(signed(output(31 downto 0)),65);
+				if	 (tempA > max32 ) then 
+					output(31 downto 0):= std_logic_vector(max32);  
+				elsif (tempA < min32 ) then
+					output(31 downto 0):= std_logic_vector(min32);
 				else
-					output(31 downto 0):= std_logic_vector(signed(rs1(31 downto 0)) + signed(output(31 downto 0))); 
+					output(31 downto 0):= std_logic_vector(signed(rs1(31 downto 0)) - signed(output(31 downto 0))); 
 				end if;
 				
-				tempB := to_integer(signed(rs1(63 downto 32)) - signed(output(63 downto 32)));
-				if	 (tempB > 2147483647 ) then 
-					output(63 downto 32):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempB < -2147483648 )	then
-					output(63 downto 32):= std_logic_vector(to_signed(-2147483648, 32));
+				tempB := resize(signed(rs1(63 downto 32)), 65) - resize(signed(output(63 downto 32)), 65);
+				if	 (tempB > max32 ) then 
+					output(63 downto 32):= std_logic_vector(max32);  
+				elsif (tempB < min32 )	then
+					output(63 downto 32):= std_logic_vector(min32);
 				else
-					output(63 downto 32):= std_logic_vector(signed(rs1(63 downto 32)) + signed(output(63 downto 32)));
+					output(63 downto 32):= std_logic_vector(signed(rs1(63 downto 32)) - signed(output(63 downto 32)));
 				end if;
 				
-				tempC := to_integer(signed(rs1(95 downto 64)) - signed(output(95 downto 64)));
-				if	 (tempC > 2147483647 ) then 
-					output(95 downto 64):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempC < -2147483648 )	then
-					output(95 downto 64):= std_logic_vector(to_signed(-2147483648, 32));
+				tempC := resize(signed(rs1(95 downto 64)), 65) - resize(signed(output(95 downto 64)), 65);
+				if	 (tempC > max32 ) then 
+					output(95 downto 64):= std_logic_vector(max32);  
+				elsif (tempC < min32 )	then
+					output(95 downto 64):= std_logic_vector(min32);
 				else 
-					output(95 downto 64):= std_logic_vector(signed(rs1(95 downto 64)) +  signed(output(95 downto 64)));
+					output(95 downto 64):= std_logic_vector(signed(rs1(95 downto 64)) -  signed(output(95 downto 64)));
 				end if;
+				 
+				tempD := resize(signed(rs1(127 downto 96)), 65) - resize(signed(output(127 downto 96)), 65);
+				if	 (tempD > max32 ) then 
+					output(127 downto 96):= std_logic_vector(max32);  
+				elsif (tempD < min32 )	then
+					output(127 downto 96):= std_logic_vector(min32);
+				else 
+					output(127 downto 96):= std_logic_vector(signed(rs1(127 downto 96)) - signed(output(127 downto 96)));
+				end if;																			 
 				
-				tempD := to_integer(signed(rs1(127 downto 96)) - signed(output(127 downto 96)));
-				if	 (tempD > 2147483647 ) then 
-					output(127 downto 96):= std_logic_vector(to_signed(2147483647, 32));  
-				elsif (tempD < -2147483648 )	then
-					output(127 downto 96):= std_logic_vector(to_signed(-2147483648, 32));
-				else 
-					output(127 downto 96):= std_logic_vector(signed(rs1(127 downto 96)) + signed(output(127 downto 96)));
-				end if;
 			-- Signed Long Integer Multiply-ADD Low with Saturation:	 
-			elsif(Opcode(7 downto 0) = "100-----") then
+			elsif(Opcode(7 downto 5) = "100") then
 				output(63 downto 0):= std_logic_vector(signed(rs3(31 downto 0)) * signed(rs2(31 downto 0)));  
 				output(127 downto 64):= std_logic_vector(signed(rs3(95 downto 64)) * signed(rs2(95 downto 64))); 
 				
-				tempA := to_integer(signed(rs1(63 downto 0)) + signed(output(63 downto 0)));
-				if	 (tempA > ((2**63)-1) ) then 
-					output(63 downto 0):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempA < -(2**63) ) then
-					output(63 downto 0):= std_logic_vector(to_signed(-(2**63), 64));
-				else
+				tempA := (rs1(63) & signed(rs1(63 downto 0))) + (output(63) & signed(output(63 downto 0)));
+				if tempA > max then 
+					output(63 downto 0):= std_logic_vector(max);  
+				elsif tempA < min  then
+					output(63 downto 0):= std_logic_vector(min);
+				else  
 					output(63 downto 0):= std_logic_vector(signed(rs1(63 downto 0)) + signed(output(63 downto 0))); 
 				end if;	  
-				
-				tempB := to_integer(signed(rs1(127 downto 64)) + signed(output(127 downto 64)));
-				if	 (tempB  > ((2**63)-1) ) then 
-					output(127 downto 64):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempB < -(2**63) )	then
-					output(127 downto 64):= std_logic_vector(to_signed(-(2**63), 64));
+			
+				tempB := (rs1(127) & signed(rs1(127 downto 64))) + (output(127) & signed(output(127 downto 64)));
+				if	tempB  > max  then 
+					output(127 downto 64):= std_logic_vector(max);  
+				elsif tempB < min then
+					output(127 downto 64):= std_logic_vector(min);
 				else
 					output(127 downto 64):= std_logic_vector(signed(rs1(127 downto 64)) + signed(output(127 downto 64)));
-				end if;
+				end if;														  										 
+					
 			-- Signed Long Integer Multiply-ADD HIGH with Saturation:	 
-			elsif(Opcode(7 downto 0) = "101-----") then		 
+			elsif(Opcode(7 downto 5) = "101") then		 
 				output(63 downto 0):= std_logic_vector(signed(rs3(63 downto 32)) * signed(rs2(63 downto 32)));  
 				output(127 downto 64):= std_logic_vector(signed(rs3(127 downto 96)) * signed(rs2(127 downto 96))); 
 				
-				tempA := to_integer(signed(rs1(63 downto 0)) + signed(output(63 downto 0)));
-				if	 (tempA > ((2**63)-1) ) then 
-					output(63 downto 0):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempA < -(2**63) ) then
-					output(63 downto 0):= std_logic_vector(to_signed(-(2**63), 64));
-				else
+				tempA := (rs1(63) & signed(rs1(63 downto 0))) + (output(63) & signed(output(63 downto 0)));
+				if tempA > max then 
+					output(63 downto 0):= std_logic_vector(max);  
+				elsif tempA < min  then
+					output(63 downto 0):= std_logic_vector(min);
+				else  
 					output(63 downto 0):= std_logic_vector(signed(rs1(63 downto 0)) + signed(output(63 downto 0))); 
 				end if;	  
-				
-				tempB := to_integer(signed(rs1(127 downto 64)) + signed(output(127 downto 64)));
-				if	 (tempB  > ((2**63)-1) ) then 
-					output(127 downto 64):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempB < -(2**63) )	then
-					output(127 downto 64):= std_logic_vector(to_signed(-(2**63), 64));
+			
+				tempB := (rs1(127) & signed(rs1(127 downto 64))) + (output(127) & signed(output(127 downto 64)));
+				if	tempB  > max  then 
+					output(127 downto 64):= std_logic_vector(max);  
+				elsif tempB < min then
+					output(127 downto 64):= std_logic_vector(min);
 				else
 					output(127 downto 64):= std_logic_vector(signed(rs1(127 downto 64)) + signed(output(127 downto 64)));
-				end if;
+				end if;	
 				-- Signed Long Integer Multiply-Subtract Low with Saturation:	 
-			elsif(Opcode(7 downto 0) = "110-----") then		 
+			elsif(Opcode(7 downto 5) = "110") then		 
 				output(63 downto 0):= std_logic_vector(signed(rs3(31 downto 0)) * signed(rs2(31 downto 0)));  
 				output(127 downto 64):= std_logic_vector(signed(rs3(95 downto 64)) * signed(rs2(95 downto 64))); 
 				
-				tempA := to_integer(signed(rs1(63 downto 0)) - signed(output(63 downto 0)));
-				if	 (tempA > ((2**63)-1) ) then 
-					output(63 downto 0):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempA < -(2**63) ) then
-					output(63 downto 0):= std_logic_vector(to_signed(-(2**63), 64));
-				else
-					output(63 downto 0):= std_logic_vector(signed(rs1(63 downto 0)) + signed(output(63 downto 0))); 
+				tempA := (rs1(63) & signed(rs1(63 downto 0))) - (output(63) & signed(output(63 downto 0)));
+				if tempA > max then 
+					output(63 downto 0):= std_logic_vector(max);  
+				elsif tempA < min  then
+					output(63 downto 0):= std_logic_vector(min);
+				else  
+					output(63 downto 0):= std_logic_vector(signed(rs1(63 downto 0)) - signed(output(63 downto 0))); 
 				end if;	  
-				
-				tempB := to_integer(signed(rs1(127 downto 64)) - signed(output(127 downto 64)));
-				if	 (tempB  > ((2**63)-1) ) then 
-					output(127 downto 64):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempB < -(2**63) )	then
-					output(127 downto 64):= std_logic_vector(to_signed(-(2**63), 64));
+			
+				tempB := (rs1(127) & signed(rs1(127 downto 64))) - (output(127) & signed(output(127 downto 64)));
+				if	tempB  > max  then 
+					output(127 downto 64):= std_logic_vector(max);  
+				elsif tempB < min then
+					output(127 downto 64):= std_logic_vector(min);
 				else
-					output(127 downto 64):= std_logic_vector(signed(rs1(127 downto 64)) + signed(output(127 downto 64)));
-				end if;
+					output(127 downto 64):= std_logic_vector(signed(rs1(127 downto 64)) - signed(output(127 downto 64)));
+				end if;	
 				-- Signed Long Integer Multiply-Subtract HIGH with Saturation:	 
-			elsif(Opcode(7 downto 0) = "101-----") then		 
+			elsif(Opcode(7 downto 5) = "101") then		 
 				output(63 downto 0):= std_logic_vector(signed(rs3(63 downto 32)) * signed(rs2(63 downto 32)));  
 				output(127 downto 64):= std_logic_vector(signed(rs3(127 downto 96)) * signed(rs2(127 downto 96))); 
 				
-				tempA := to_integer(signed(rs1(63 downto 0)) - signed(output(63 downto 0)));
-				if	 (tempA > ((2**63)-1) ) then 
-					output(63 downto 0):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempA < -(2**63) ) then
-					output(63 downto 0):= std_logic_vector(to_signed(-(2**63), 64));
-				else
-					output(63 downto 0):= std_logic_vector(signed(rs1(63 downto 0)) + signed(output(63 downto 0))); 
+				tempA := (rs1(63) & signed(rs1(63 downto 0))) - (output(63) & signed(output(63 downto 0)));
+				if tempA > max then 
+					output(63 downto 0):= std_logic_vector(max);  
+				elsif tempA < min  then
+					output(63 downto 0):= std_logic_vector(min);
+				else  
+					output(63 downto 0):= std_logic_vector(signed(rs1(63 downto 0)) - signed(output(63 downto 0))); 
 				end if;	  
-				
-				tempB := to_integer(signed(rs1(127 downto 64)) - signed(output(127 downto 64)));
-				if	 (tempB  > ((2**63)-1) ) then 
-					output(127 downto 64):= std_logic_vector(to_signed( ((2**63)-1), 64));  
-				elsif (tempB < -(2**63) )	then
-					output(127 downto 64):= std_logic_vector(to_signed(-(2**63), 64));
+			
+				tempB := (rs1(127) & signed(rs1(127 downto 64))) - (output(127) & signed(output(127 downto 64)));
+				if	tempB  > max  then 
+					output(127 downto 64):= std_logic_vector(max);  
+				elsif tempB < min then
+					output(127 downto 64):= std_logic_vector(min);
 				else
-					output(127 downto 64):= std_logic_vector(signed(rs1(127 downto 64)) + signed(output(127 downto 64)));
-				end if;
+					output(127 downto 64):= std_logic_vector(signed(rs1(127 downto 64)) - signed(output(127 downto 64)));
+				end if;	
 				 
 			end if R4;
 			
 		-- For other basic operations		   
 		elsif (Opcode(9 downto 8) = "11") then	 
-			R3:if (Opcode(7 downto 0) = "---00000") then
+			R3:if (Opcode(4 downto 0) = "00000") then
 				--Do nothing NOP 
-				 
 				--A
-			elsif (Opcode(7 downto 0) = "---00001")	then
+			elsif (Opcode(4 downto 0) = "00001")	then
 				output(31 downto 0):= std_logic_vector(unsigned(rs1(31 downto 0)) + unsigned(rs2(31 downto 0)));  
 				output(63 downto 32):= std_logic_vector(unsigned(rs1(63 downto 32)) + unsigned(rs2(63 downto 32)));   
 				output(95 downto 64):= std_logic_vector(unsigned(rs1(95 downto 64)) + unsigned(rs2(95 downto 64)));   
 				output(127 downto 96):= std_logic_vector(unsigned(rs1(127 downto 96)) + unsigned(rs2(127 downto 96)));
-				--AH 
-			elsif (Opcode(7 downto 0) = "---00010")	then  
+				--AH 																																																																																																																																						  																																																																																																				 
+			elsif (Opcode(4 downto 0) = "00010")	then  
 				output(15 downto 0):= std_logic_vector(unsigned(rs1(15 downto 0)) + unsigned(rs2(15 downto 0)));  
 				output(31 downto 16):= std_logic_vector(unsigned(rs1(31 downto 16)) + unsigned(rs2(31 downto 16)));   
 				output(47 downto 32):= std_logic_vector(unsigned(rs1(47 downto 32)) + unsigned(rs2(47 downto 32)));   
@@ -351,28 +359,91 @@ begin
 				output(79 downto 64):= std_logic_vector(unsigned(rs1(79 downto 64)) + unsigned(rs2(79 downto 64)));  
 				output(95 downto 80):= std_logic_vector(unsigned(rs1(95 downto 80)) + unsigned(rs2(95 downto 80)));   
 				output(111 downto 96):= std_logic_vector(unsigned(rs1(111 downto 96)) + unsigned(rs2(111 downto 96)));   
-				output(127 downto 112):= std_logic_vector(unsigned(rs1(127 downto 112)) + unsigned(rs2(127 downto 112))); 
+				output(127 downto 112):= std_logic_vector(unsigned(rs1(127 downto 112)) + unsigned(rs2(127 downto 112))); 	 
 				--AHS
-			elsif (Opcode(7 downto 0) = "---00011") then
-				output(15 downto 0):= std_logic_vector(signed(rs1(15 downto 0)) + signed(rs2(15 downto 0)));  
-				output(31 downto 16):= std_logic_vector(signed(rs1(31 downto 16)) + signed(rs2(31 downto 16)));   
-				output(47 downto 32):= std_logic_vector(signed(rs1(47 downto 32)) + signed(rs2(47 downto 32)));   
-				output(63 downto 48):= std_logic_vector(signed(rs1(63 downto 48)) + signed(rs2(63 downto 48)));
-				output(79 downto 64):= std_logic_vector(signed(rs1(79 downto 64)) + signed(rs2(79 downto 64)));  
-				output(95 downto 80):= std_logic_vector(signed(rs1(95 downto 80)) + signed(rs2(95 downto 80)));   
-				output(111 downto 96):= std_logic_vector(signed(rs1(111 downto 96)) + signed(rs2(111 downto 96)));   
-				output(127 downto 112):= std_logic_vector(signed(rs1(127 downto 112)) + signed(rs2(127 downto 112)));  
+			elsif (Opcode(4 downto 0) = "00011") then
+				tempA := resize(signed(rs2(15 downto 0)), 65) + resize(signed(rs1(15 downto 0)),65);
+				if tempA > max16 then
+				   output(15 downto 0):= std_logic_vector(max16);
+				elsif tempA < min16 then 
+				   output(15 downto 0):= std_logic_vector(min16);
+				else 
+				   output(15 downto 0):= std_logic_vector(signed(rs2(15 downto 0)) + signed(rs1(15 downto 0)));
+				end if; 
+
+				tempB := resize(signed(rs2(31 downto 16)), 65) + resize(signed(rs1(31 downto 16)),65);	
+				if tempB > max16 then
+				   output(31 downto 16):= std_logic_vector(max16);
+				elsif tempB < min16 then 
+				   output(31 downto 16):= std_logic_vector(min16);
+				else 
+				   output(31 downto 16):= std_logic_vector(signed(rs2(31 downto 16)) + signed(rs1(31 downto 16)));
+				end if; 
+				
+				tempC := resize(signed(rs2(47 downto 32)), 65) + resize(signed(rs1(47 downto 32)),65);	
+				if tempC > max16 then
+				   output(47 downto 32):= std_logic_vector(max16);
+				elsif tempC < min16 then 
+				   output(47 downto 32):= std_logic_vector(min16);
+				else 
+				   output(47 downto 32):= std_logic_vector(signed(rs2(47 downto 32)) + signed(rs1(47 downto 32)));
+				end if; 
+				
+				tempD := resize(signed(rs2(63 downto 48)), 65) + resize(signed(rs1(63 downto 48)),65);	
+				if tempD > max16 then
+				   output(63 downto 48):= std_logic_vector(max16);
+				elsif tempD < min16 then 
+				   output(63 downto 48):= std_logic_vector(min16);
+				else 
+				   output(63 downto 48):= std_logic_vector(signed(rs2(63 downto 48)) + signed(rs1(63 downto 48)));
+				end if; 
+				   
+				tempE := resize(signed(rs2(79 downto 64)), 65) + resize(signed(rs1(79 downto 64)),65);	
+				if tempE > max16 then
+				   output(79 downto 64):= std_logic_vector(max16);
+				elsif tempE < min16 then 
+				   output(79 downto 64):= std_logic_vector(min16);
+				else 
+				   output(79 downto 64):= std_logic_vector(signed(rs2(79 downto 64)) + signed(rs1(79 downto 64)));
+				end if; 
+				
+				tempF := resize(signed(rs2(95 downto 80)), 65) + resize(signed(rs1(79 downto 64)),65);	
+				if tempF > max16 then
+				   output(95 downto 80):= std_logic_vector(max16);
+				elsif tempF < min16 then 
+				   output(95 downto 80):= std_logic_vector(min16);
+				else 
+				   output(95 downto 80):= std_logic_vector(signed(rs2(95 downto 80)) + signed(rs1(95 downto 80)));
+				end if; 
+				
+ 				tempG := resize(signed(rs2(111 downto 96)), 65) + resize(signed(rs1(111 downto 96)),65);	
+				if tempG > max16 then
+				   output(111 downto 96):= std_logic_vector(max16);
+				elsif tempG < min16 then 
+				   output(111 downto 96):= std_logic_vector(min16);
+				else 
+				   output(111 downto 96):= std_logic_vector(signed(rs2(111 downto 96)) + signed(rs1(111 downto 96)));
+				end if; 
+				
+				tempH := resize(signed(rs2(127 downto 112)), 65) + resize(signed(rs1(127 downto 112)),65);	
+				if tempH > max16 then
+				   output(127 downto 112):= std_logic_vector(max16);
+				elsif tempH < min16 then 
+				   output(127 downto 112):= std_logic_vector(min16);
+				else 
+				   output(127 downto 112):= std_logic_vector(signed(rs2(127 downto 112)) + signed(rs1(127 downto 112)));
+				end if;
 				 --AND 
-			elsif (Opcode(7 downto 0) = "---00100")	then
+			elsif (Opcode(4 downto 0) = "00100")	then
 				output := rs1 and rs2;
 				--BCW
-			elsif (Opcode(7 downto 0) = "---00101")	then	
+			elsif (Opcode(4 downto 0) = "00101")	then	
 				output(31 downto 0):= rs1(31 downto 0) ;  
 				output(63 downto 32):= rs1(31 downto 0);   
 				output(95 downto 64):= rs1(31 downto 0);   
 				output(127 downto 96):= rs1(31 downto 0);  
 				--CLZ
-			elsif (Opcode(7 downto 0) = "---00110")	then
+			elsif (Opcode(4 downto 0) = "00110")	then
 				for i in 127 downto 96 loop
 		    		if rs1(i) = '0' then
 		      			track1 := track1 + 1;
@@ -406,7 +477,7 @@ begin
 				output(63 downto 32):= std_logic_vector(to_unsigned(track3, 32)); 
 				output(31 downto 0):= std_logic_vector(to_unsigned(track4, 32)); 
 				--Max 
-			elsif (Opcode(7 downto 0) = "---00111")	then	
+			elsif (Opcode(4 downto 0) = "00111")	then	
 				if (signed(rs1(31 downto 0)) >= signed(rs2(31 downto 0))) then
 					output(31 downto 0):= rs1(31 downto 0);
 				else
@@ -428,7 +499,7 @@ begin
 					output(127 downto 96):= rs2(127 downto 96);
 				end if;	
 				--Min	
-			elsif (Opcode(7 downto 0) = "---01000")	then	
+			elsif (Opcode(4 downto 0) = "01000")	then	
 				if (signed(rs1(31 downto 0)) <= signed(rs2(31 downto 0))) then
 					output(31 downto 0):= rs1(31 downto 0);
 				else
@@ -448,24 +519,55 @@ begin
 					output(127 downto 96):= rs1(127 downto 96);
 				else
 					output(127 downto 96):= rs2(127 downto 96);
-				end if;
+				end if;	
 				--MSGN
-			elsif (Opcode(7 downto 0) = "---01001")	then		
-				output(31 downto 0):= std_logic_vector(to_signed(to_integer(signed(rs1(31 downto 0))) * to_integer(signed(rs2(31 downto 0))), 32));  
-				output(63 downto 32):= std_logic_vector(to_signed(to_integer(signed(rs1(63 downto 32))) * to_integer(signed(rs2(63 downto 32))), 32)); 
-				output(95 downto 64):= std_logic_vector(to_signed(to_integer(signed(rs1(95 downto 64))) * to_integer(signed(rs2(95 downto 64))), 32));
-				output(127 downto 96):= std_logic_vector(to_signed(to_integer(signed(rs1(127 downto 96))) * to_integer(signed(rs2(127 downto 96))), 32));
+			elsif (Opcode(4 downto 0) = "01001")	then
+				 tempA := resize(signed(rs1(31 downto 0)) * signed(rs2(31 downto 0)), 65);	
+				if tempA > max32 then
+				   output(31 downto 0):= std_logic_vector(max32);
+				elsif tempA < min32 then 
+				   output(31 downto 0):= std_logic_vector(min32);
+				else 
+				 output(31 downto 0):= std_logic_vector(to_signed(to_integer(signed(rs1(31 downto 0))) * to_integer(signed(rs2(31 downto 0))), 32)); 
+				end if; 
+				
+				tempB := resize(signed(rs1(62 downto 32)) * signed(rs2(62 downto 32)), 65);	
+				if tempB > max32 then
+				   output(63 downto 32):= std_logic_vector(max32);
+				elsif tempB < min32 then 
+				   output(63 downto 32):= std_logic_vector(min32);
+				else 
+				 output(63 downto 32):= std_logic_vector(to_signed(to_integer(signed(rs1(63 downto 32))) * to_integer(signed(rs2(63 downto 32))), 32)); 
+				end if;  
+				
+				tempC := resize(signed(rs1(95 downto 64)) * signed(rs2(95 downto 64)), 65);	
+				if tempC > max32 then
+				   output(95 downto 64):= std_logic_vector(max32);
+				elsif tempC < min32 then 
+				   output(95 downto 64):= std_logic_vector(min32);
+				else 
+				 output(95 downto 64):= std_logic_vector(to_signed(to_integer(signed(rs1(95 downto 64))) * to_integer(signed(rs2(95 downto 64))), 32)); 
+				end if; 
+				
+				tempD := resize(signed(rs1(127 downto 96)) * signed(rs2(127 downto 96)), 65);	
+				if tempD > max32 then
+				   output(127 downto 96):= std_logic_vector(max32);
+				elsif tempD < min32 then 
+				   output(127 downto 96):= std_logic_vector(min32);
+				else 
+				  output(127 downto 96):= std_logic_vector(to_signed(to_integer(signed(rs1(127 downto 96))) * to_integer(signed(rs2(127 downto 96))), 32)); 
+				end if;  				
 				--MPYU 
-			elsif (Opcode(7 downto 0) = "---01010")	then		
+			elsif (Opcode(4 downto 0) = "01010")	then		
 				output(31 downto 0):= std_logic_vector(unsigned(rs1(15 downto 0)) * unsigned(rs2(15 downto 0)));  
 				output(63 downto 32):= std_logic_vector(unsigned(rs1(47 downto 32)) * unsigned(rs2(47 downto 32)));   
 				output(95 downto 64):= std_logic_vector(unsigned(rs1(79 downto 64)) * unsigned(rs2(79 downto 64)));   
 				output(127 downto 96):= std_logic_vector(unsigned(rs1(111 downto 96)) * unsigned(rs2(111 downto 96)));	
 				 --Or
-			elsif (Opcode(7 downto 0) = "---01011")	then			
+			elsif (Opcode(4 downto 0) = "01011")	then			
 				output := rs1 or rs2;
 				--POPCNTH
-			elsif (Opcode(7 downto 0) = "---01100")	then
+			elsif (Opcode(4 downto 0) = "01100")	then
 				for i in 127 downto 112 loop
 		    		if rs1(i) = '1' then
 		      			track1 := track1 + 1;
@@ -515,7 +617,7 @@ begin
 				output(111 downto 96):= std_logic_vector(to_unsigned(track2, 16)); 
 				output(127 downto 112):= std_logic_vector(to_unsigned(track1, 16));
 				--ROT
-			elsif (Opcode(7 downto 0) = "---01101")	then
+			elsif (Opcode(4 downto 0) = "01101")	then
 				output := rs1;
 		    	for i in 1 to to_integer(unsigned(rs2(6 downto 0))) loop
 					temp:= output(0);
@@ -523,7 +625,7 @@ begin
 					output(127):= temp;
 				end loop;
 				--ROTW		    
-			elsif (Opcode(7 downto 0) = "---01110")	then
+			elsif (Opcode(4 downto 0) = "01110")	then
 				output := rs1;
 				for i in 1 to to_integer(unsigned(rs2(5 downto 0))) loop
 					temp:= output(0);
@@ -549,7 +651,7 @@ begin
 					output(127):= temp;
 				end loop;
 			   --SHLHI
-			elsif (Opcode(7 downto 0) = "---01111")	then  
+			elsif (Opcode(4 downto 0) = "01111")	then  
 				output := rs1;
 				for i in 1 to to_integer(unsigned(rs2(3 downto 0))) loop
 					output(15 downto 0) :=	(output(14 downto 0) & '0');
@@ -583,7 +685,7 @@ begin
 					output(127 downto 112):= (output(126 downto 112) & '0');
 				end loop;
 				--SFH
-			elsif (Opcode(7 downto 0) = "---10000")	then  
+			elsif (Opcode(4 downto 0) = "10000")	then  
 				output(15 downto 0):= std_logic_vector(unsigned(rs2(15 downto 0)) - unsigned(rs1(15 downto 0)));  
 				output(31 downto 16):= std_logic_vector(unsigned(rs2(31 downto 16)) - unsigned(rs1(31 downto 16)));   
 				output(47 downto 32):= std_logic_vector(unsigned(rs2(47 downto 32)) - unsigned(rs1(47 downto 32)));   
@@ -593,28 +695,94 @@ begin
 				output(111 downto 96):= std_logic_vector(unsigned(rs2(111 downto 96)) - unsigned(rs1(111 downto 96)));   
 				output(127 downto 112):= std_logic_vector(unsigned(rs2(127 downto 112)) - unsigned(rs1(127 downto 112)));
 				--SFW
-			elsif (Opcode(7 downto 0) = "---10001")	then 
+			elsif (Opcode(4 downto 0) = "10001")	then 
 				output(31 downto 0):= std_logic_vector(unsigned(rs2(31 downto 0)) - unsigned(rs1(31 downto 0)));  
 				output(63 downto 32):= std_logic_vector(unsigned(rs2(63 downto 32)) - unsigned(rs1(63 downto 32)));   
 				output(95 downto 64):= std_logic_vector(unsigned(rs2(95 downto 64)) - unsigned(rs1(95 downto 64)));   
 				output(127 downto 96):= std_logic_vector(unsigned(rs2(127 downto 96)) - unsigned(rs1(127 downto 96)));
 				--SFHS
-			elsif (Opcode(7 downto 0) = "---10010")	then 
-				output(15 downto 0):= std_logic_vector(signed(rs2(15 downto 0)) - signed(rs1(15 downto 0)));  
-				output(31 downto 16):= std_logic_vector(signed(rs2(31 downto 16)) - signed(rs1(31 downto 16)));   
-				output(47 downto 32):= std_logic_vector(signed(rs2(47 downto 32)) - signed(rs1(47 downto 32)));   
-				output(63 downto 48):= std_logic_vector(signed(rs2(63 downto 48)) - signed(rs1(63 downto 48)));
-				output(79 downto 64):= std_logic_vector(signed(rs2(79 downto 64)) - signed(rs1(79 downto 64)));  
-				output(95 downto 80):= std_logic_vector(signed(rs2(95 downto 80)) - signed(rs1(95 downto 80)));   
-				output(111 downto 96):= std_logic_vector(signed(rs2(111 downto 96)) - signed(rs1(111 downto 96)));   
-				output(127 downto 112):= std_logic_vector(signed(rs2(127 downto 112)) - signed(rs1(127 downto 112))); 
+			elsif (Opcode(4 downto 0) = "10010")	then 
+				tempA := resize(signed(rs2(15 downto 0)), 65) - resize(signed(rs1(15 downto 0)),65);
+				if tempA > max16 then
+				   output(15 downto 0):= std_logic_vector(max16);
+				elsif tempA < min16 then 
+				   output(15 downto 0):= std_logic_vector(min16);
+				else 
+				   output(15 downto 0):= std_logic_vector(signed(rs2(15 downto 0)) - signed(rs1(15 downto 0)));
+				end if; 
+
+				tempB := resize(signed(rs2(31 downto 16)), 65) - resize(signed(rs1(31 downto 16)),65);	
+				if tempB > max16 then
+				   output(31 downto 16):= std_logic_vector(max16);
+				elsif tempB < min16 then 
+				   output(31 downto 16):= std_logic_vector(min16);
+				else 
+				   output(31 downto 16):= std_logic_vector(signed(rs2(31 downto 16)) - signed(rs1(31 downto 16)));
+				end if; 
+				
+				tempC := resize(signed(rs2(47 downto 32)), 65) - resize(signed(rs1(47 downto 32)),65);	
+				if tempC > max16 then
+				   output(47 downto 32):= std_logic_vector(max16);
+				elsif tempC < min16 then 
+				   output(47 downto 32):= std_logic_vector(min16);
+				else 
+				   output(47 downto 32):= std_logic_vector(signed(rs2(47 downto 32)) - signed(rs1(47 downto 32)));
+				end if; 
+				
+				tempD := resize(signed(rs2(63 downto 48)), 65) - resize(signed(rs1(63 downto 48)),65);	
+				if tempD > max16 then
+				   output(63 downto 48):= std_logic_vector(max16);
+				elsif tempD < min16 then 
+				   output(63 downto 48):= std_logic_vector(min16);
+				else 
+				   output(63 downto 48):= std_logic_vector(signed(rs2(63 downto 48)) - signed(rs1(63 downto 48)));
+				end if; 
+				   
+				tempE := resize(signed(rs2(79 downto 64)), 65) - resize(signed(rs1(79 downto 64)),65);	
+				if tempE > max16 then
+				   output(79 downto 64):= std_logic_vector(max16);
+				elsif tempE < min16 then 
+				   output(79 downto 64):= std_logic_vector(min16);
+				else 
+				   output(79 downto 64):= std_logic_vector(signed(rs2(79 downto 64)) - signed(rs1(79 downto 64)));
+				end if; 
+				
+				tempF := resize(signed(rs2(95 downto 80)), 65) - resize(signed(rs1(79 downto 64)),65);	
+				if tempF > max16 then
+				   output(95 downto 80):= std_logic_vector(max16);
+				elsif tempF < min16 then 
+				   output(95 downto 80):= std_logic_vector(min16);
+				else 
+				   output(95 downto 80):= std_logic_vector(signed(rs2(95 downto 80)) - signed(rs1(95 downto 80)));
+				end if; 
+				
+ 				tempG := resize(signed(rs2(111 downto 96)), 65) - resize(signed(rs1(111 downto 96)),65);	
+				if tempG > max16 then
+				   output(111 downto 96):= std_logic_vector(max16);
+				elsif tempG < min16 then 
+				   output(111 downto 96):= std_logic_vector(min16);
+				else 
+				   output(111 downto 96):= std_logic_vector(signed(rs2(111 downto 96)) - signed(rs1(111 downto 96)));
+				end if; 
+				
+				tempH := resize(signed(rs2(127 downto 112)), 65) - resize(signed(rs1(127 downto 112)),65);	
+				if tempH > max16 then
+				   output(127 downto 112):= std_logic_vector(max16);
+				elsif tempH < min16 then 
+				   output(127 downto 112):= std_logic_vector(min16);
+				else 
+				   output(127 downto 112):= std_logic_vector(signed(rs2(127 downto 112)) - signed(rs1(127 downto 112)));
+				end if;
 				--XOR
-			elsif (Opcode(7 downto 0) = "---10011")	then 
+			elsif (Opcode(4 downto 0) = "10011") then 
 				output:= rs1 xor rs2;
+			else												 
+				-- code should never reach here
+				output := std_logic_vector(to_unsigned(3, 128));
 			end if R3;
 		else
 			output := std_logic_vector(to_unsigned(10, 128));
-		end if Instruction_Format;
+		end if Instruction;
 
 		c <= output;
 	end process;

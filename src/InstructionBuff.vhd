@@ -28,32 +28,25 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity Instruction_Buffer is
 	 port(
-	 	 CLK : in STD_LOGIC;
-	 	 load : in STD_LOGIC;
+		 CLK : in STD_LOGIC;
 		 PC_In : in STD_LOGIC_VECTOR(5 downto 0);
-		 instruction_in : in STD_LOGIC_VECTOR(24 downto 0);
-		 instruction_out : out STD_LOGIC_VECTOR(24 downto 0)
+		 Instruction_code : out STD_LOGIC_VECTOR(25 downto 0);
+		 PC_Out : out STD_LOGIC_VECTOR(5 downto 0)
 	     );
 end Instruction_Buffer;
 
-architecture behavior of Instruction_Buffer is
-	type InstructionBuffer is array (0 to 63) of STD_LOGIC_VECTOR(24 downto 0);
-	signal instr_buffer : InstructionBuffer;
+--}} End of automatically maintained section
+
+architecture behavior of Instruction_Buffer is	 
+	signal PC: std_logic_vector(5 downto 0):= "000000";
 begin
 	
-	loading: process(CLK) begin
-		if (rising_edge(CLK)) then
-			if (load = '1') then
-				instr_buffer(to_integer(unsigned(PC_In))) <= instruction_in;
-			end if;					  
-		end if;
-	end process loading;
 	
 	
-	outputting: process(CLK) begin
-		if (rising_edge(CLK)) then
-			instruction_out <= instr_buffer(to_integer(unsigned(PC_In)));
-		end if;
-	end process outputting;			
+	
+	
+	
+	
+	
 	
 end behavior;
