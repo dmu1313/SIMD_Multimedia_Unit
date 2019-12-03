@@ -51,8 +51,16 @@ begin
 	variable min: signed (63 downto 0) := signed(b"1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000");
 	variable max: signed (63 downto 0) := signed(b"0111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111");
 	variable track1, track2, track3, track4, track5, track6, track7, track8 : natural:= 0;
-	variable test : signed (63 downto 0);
+	variable test : unsigned (31 downto 0);
 	begin 
+				track1 := 0;
+				track2 := 0;
+				track3 := 0;
+				track4 := 0;
+				track5 := 0;
+				track6 := 0;
+				track7 := 0;
+				track8 := 0;
 		-- For Load immediate
 Instruction:if (Opcode(9)= '0')  then
 			--Load Immediate based on index
@@ -557,9 +565,9 @@ Instruction:if (Opcode(9)= '0')  then
 				else 
 				  output(127 downto 96):= std_logic_vector(to_signed(to_integer(signed(rs1(127 downto 96))) * to_integer(signed(rs2(127 downto 96))), 32)); 
 				end if;  				
-				--MPYU 
-			elsif (Opcode(4 downto 0) = "01010")	then		
-				output(31 downto 0):= std_logic_vector(unsigned(rs1(15 downto 0)) * unsigned(rs2(15 downto 0)));  
+				--MPYU
+			elsif (Opcode(4 downto 0) = "01010")	then
+				output(31 downto 0) := std_logic_vector(unsigned(rs1(15 downto 0)) * unsigned(rs2(15 downto 0)));  
 				output(63 downto 32):= std_logic_vector(unsigned(rs1(47 downto 32)) * unsigned(rs2(47 downto 32)));   
 				output(95 downto 64):= std_logic_vector(unsigned(rs1(79 downto 64)) * unsigned(rs2(79 downto 64)));   
 				output(127 downto 96):= std_logic_vector(unsigned(rs1(111 downto 96)) * unsigned(rs2(111 downto 96)));	
