@@ -1,2 +1,6 @@
+li r1 24789 0
+li r2 57642 0
 nop
-li r4 1000 3
+A r3 r1 r2
+nop
+AND r4 r3 r1
