@@ -72,6 +72,7 @@ begin
 
 	u4: entity RegFile port map(
 			clk=>clk,
+			reset=>reset,
 			rs1_sel=>rs1_sel, rs2_sel=>rs2_sel, rs3_sel=>rs3_sel,
 			write_data=>write_data,
 			write_enable=>write_enable,

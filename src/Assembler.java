@@ -120,8 +120,17 @@ public class Assembler {
 			String line = sc.nextLine()
 							.toLowerCase()
 							.trim();
+			
+			if (line.length() == 0) {
+				continue;
+			}
+			
 			String operands[] = line.split(" ");
 			String output = "";
+			
+			if (operands.length <= 1) {
+				
+			}
 			
 			if (operands[0].equals(NOP)) {
 				output = "11";
