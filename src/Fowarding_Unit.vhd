@@ -17,7 +17,7 @@ end Forwarding_Unit;
 
 architecture behavior of Forwarding_Unit is
 begin
-end
+end	behavior;
 
 
 
