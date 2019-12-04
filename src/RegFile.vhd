@@ -70,21 +70,21 @@ begin
 			
 --Write to registers  
 --Not sure if Enable is needed
-		if write_enable = '1' then
-			registers(to_integer(unsigned(write_sel))) <= write_data;
+			if write_enable = '1' then
+				registers(to_integer(unsigned(write_sel))) <= write_data;
 --bypassing rs1
-			if (write_sel = rs1_sel) then
-				rs1_out <= write_data;
-			end if;
+				if (write_sel = rs1_sel) then
+					rs1_out <= write_data;
+				end if;
 --bypassing rs2			
-			if (write_sel = rs2_sel) then
-				rs2_out <= write_data;
-			end if;
+				if (write_sel = rs2_sel) then
+					rs2_out <= write_data;
+				end if;
 --bypassing rs3			
-			if (write_sel = rs3_sel) then
-				rs3_out <= write_data;
-			end if;	
+				if (write_sel = rs3_sel) then
+					rs3_out <= write_data;
+				end if;	
+			end if;
 		end if;
-end if;
-end process;
+	end process;
 end behavior;

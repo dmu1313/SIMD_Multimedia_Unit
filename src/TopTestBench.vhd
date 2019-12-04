@@ -32,7 +32,7 @@ entity TopTestBench is
 		LOG_NUM_REG : positive := 5;
 		REG_WIDTH : positive := 128;
 		ALU_OP_WIDTH : positive := 10;
-		R3_OPCODE_WIDTH : positive := 8;
+		R3_OPCODE_WIDTH : positive := 8
 	);
 end TopTestBench;
 
@@ -43,23 +43,23 @@ architecture TopTestBench of TopTestBench is
     file file_results : text;
 
     -- stimulus signals
-    signal clk : std_logic := 0;
+    signal clk : std_logic := '0';
     signal reset : std_logic;
 
     signal instruction_in : std_logic_vector(INSTR_WIDTH-1 downto 0);
     signal load : std_logic;
-    signal done_loading : std_logic := 0;
+    signal done_loading : std_logic := '0';
 
     signal num_instructions : integer range 0 to INSTR_BUF_SIZE := 0;
     signal cycle_number : integer range 0 to INSTR_BUF_SIZE*2 := 0;
-    signal done_executing : std_logic := 0;
+    signal done_executing : std_logic := '0';
 
 
     -- observed signals
 
 begin
 
-    reset <= '1', '0' after 2 * period;
+    
 
     UUT: entity Processor port map (
             clk=>clk,
@@ -76,7 +76,11 @@ begin
         file_open(file_in, "binary_output.txt",  read_mode);
         load <= '1';
 
+        reset <= '1';--, '0' after 2 * period;
+
         wait for period*2;
+
+        reset <= '0';
 
         while not endfile(file_in) loop
             -- Read line from file and then read 0's and 1's into instruction signal
@@ -89,10 +93,14 @@ begin
             wait until rising_edge(clk);
         end loop;
 
+        load <= '0';
+        reset <= '1';
+        wait for period*2;
+        reset <= '0';
+
         wait for period/2;
 
         done_loading <= '1';
-        load <= '0';
 
         wait;
     end process ReadingFile;
@@ -100,29 +108,30 @@ begin
     WritingResults: process
         variable result_line : line;
     begin
-        file_open(file_RESULTS, "output_results.txt", write_mode);
+        file_open(file_results, "output_results.txt", write_mode);
         
         
-        while not done_executing loop
-            if (done_loading) then
-                write(my_line, string'("Cycle ") & integer'image(cycle_number) & string'(":"));
-                writeline(output, my_line);
+        while not (done_executing='1') loop
+            if (done_loading='1') then
+                write(result_line, string'("Cycle ") & integer'image(cycle_number) & string'(":"));
+                writeline(file_results, result_line);
 
                 -- write(result_line, out_data);
                 -- writeline(file_results, result_line);
             end if;
             wait until rising_edge(clk);
         end loop;
-
+        
+        wait;
     end process WritingResults;
 
     count_cycles: process
     begin
         while (cycle_number < num_instructions + 3) loop
-            if (done_loading) then
+            if (done_loading = '1') then
                 cycle_number <= cycle_number + 1;
             end if;
-            wait for rising_edge(clk);
+            wait until rising_edge(clk);
         end loop;
 
         done_executing <= '1';

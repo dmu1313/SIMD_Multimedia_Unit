@@ -185,7 +185,12 @@ public class Assembler {
 				return;
 			}
 			
-			writeLine(bw, output);
+			if (!sc.hasNextLine()) {
+				writeLine(bw, output, false);
+			}
+			else {
+				writeLine(bw, output, true);
+			}
 		}
 		
 		closeFiles(bw, sc);
@@ -233,8 +238,10 @@ public class Assembler {
 		return binaryNum;
 	}
 	
-	public static void writeLine(BufferedWriter bw, String s) {
-		s = s + '\n';
+	public static void writeLine(BufferedWriter bw, String s, boolean newLine) {
+		if (newLine) {
+			s = s + '\n';
+		}
 		try {
 			bw.write(s);
 			bw.flush();

@@ -57,7 +57,7 @@ begin
 
 	u3: entity IF_ID port map(clk=>clk, rst=>reset, Ins_In=>instruction_out, Ins_Out=>IF_ID_instr_out);
 
-	rs_sel: process(clk)
+	rs_sel: process(all)
 	begin
 		if (IF_ID_instr_out(24) = '0') then
 			-- load immediate so read rd into rs1.
@@ -80,24 +80,30 @@ begin
 			rs1_out=>rs1_out, rs2_out=>rs2_out, rs3_out=>rs3_out
 		);
 
+	ID_EX_rs1_out <= rs1_out;
+	ID_EX_rs2_out <= rs2_out;
+	ID_EX_rs3_out <= rs3_out;
+
 	u5: entity ID_EX port map(
 			clk=>clk,
 			rst=>reset,
-			rs1_In=>rs1_out,
-			rs2_In=>rs2_out,
-			rs3_In=>rs3_out,
+			-- rs1_In=>rs1_out,
+			-- rs2_In=>rs2_out,
+			-- rs3_In=>rs3_out,
 			Ins_In=>IF_ID_instr_out,
-			Ins_Out=>ID_EX_instr_out,
-			rs1_Out=>ID_EX_rs1_out,
-			rs2_Out=>ID_EX_rs2_out,
-			rs3_Out=>ID_EX_rs3_out
+			Ins_Out=>ID_EX_instr_out
+			-- rs1_Out=>ID_EX_rs1_out,
+			-- rs2_Out=>ID_EX_rs2_out,
+			-- rs3_Out=>ID_EX_rs3_out
 		);
 
-	alu_inputs: process(clk)
+	alu_inputs: process(all)
 	begin
 		ALU_rd_in <= ID_EX_rs1_out;
 		ALU_rs1_in <= ID_EX_rs1_out;
 		ALU_rs3_in <= ID_EX_rs3_out;
+		
+		ALU_opcode <= ID_EX_instr_out(INSTR_WIDTH-1 downto INSTR_WIDTH-10);
 
 		if (ID_EX_instr_out(24) = '0') then
 			-- load immediate
@@ -131,11 +137,14 @@ begin
 	EX_WB_instr_out_r3_op <= unsigned(EX_WB_instr_out(22 downto 15));
 	write_sel <= EX_WB_instr_out(4 downto 0);
 
-	write_enable <= '1' when (ID_EX_instr_out(24) = '0')
-								or (ID_EX_instr_out(24 downto 23) = "10")
-								or ((ID_EX_instr_out(24 downto 23) = "11")-- and (not (ID_EX_instr_out = NOP_BINARY))
+	write_enable <= '1' when (not (EX_WB_instr_out = std_logic_vector(to_unsigned(0, INSTR_WIDTH))) ) and
+							(
+								(EX_WB_instr_out(24) = '0')
+								or (EX_WB_instr_out(24 downto 23) = "10")
+								or ((EX_WB_instr_out(24 downto 23) = "11")-- and (not (ID_EX_instr_out = NOP_BINARY))
 																			and (EX_WB_instr_out_r3_op < 20)
-																			and (EX_WB_instr_out_r3_op > 0)) else
+																			and (EX_WB_instr_out_r3_op > 0))
+																											) else
 					'0';
 
 	-- u8: entity Forwarding_Unit port map(clk=>clk, reset_bar=>reset_bar, d=>step, q=>triangle_output);
