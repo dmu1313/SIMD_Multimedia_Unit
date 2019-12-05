@@ -1,5 +1,5 @@
 li r1 24789 0
-li r2 57642 0
+li r2 32767 0
 nop
 A r3 r1 r2
 nop

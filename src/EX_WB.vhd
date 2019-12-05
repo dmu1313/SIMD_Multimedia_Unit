@@ -34,23 +34,15 @@ entity EX_WB is
 end EX_WB;
 
 architecture behavior of EX_WB is
-	signal pipeline_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
-	signal pipeline_rd : std_logic_vector(REG_WIDTH-1 downto 0);
 begin
 	process(clk, rst)
 	begin
 		if rst = '1' then 
 			Ins_Out <= std_logic_vector(to_unsigned(0, INSTR_WIDTH));
 			rd_Out <= std_logic_vector(to_unsigned(0, REG_WIDTH));
-
-			pipeline_instr <= std_logic_vector(to_unsigned(0, INSTR_WIDTH));
-			pipeline_rd <= std_logic_vector(to_unsigned(0, REG_WIDTH));
 		elsif rising_edge(clk) then
-			Ins_Out <= pipeline_instr;
-			rd_Out <= pipeline_rd;
-
-			pipeline_instr <= Ins_In;
-			pipeline_rd <= rd_In;
+			Ins_Out <= Ins_In;
+			rd_Out <= rd_In;
 		end if;
    end process;
 end behavior;

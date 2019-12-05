@@ -32,65 +32,112 @@ entity TopTestBench is
 		LOG_NUM_REG : positive := 5;
 		REG_WIDTH : positive := 128;
 		ALU_OP_WIDTH : positive := 10;
-		R3_OPCODE_WIDTH : positive := 8;
+		R3_OPCODE_WIDTH : positive := 8
 	);
 end TopTestBench;
 
 architecture TopTestBench of TopTestBench is   
     constant period : time := 50ns;
 
-    file file_VECTORS : text;
-    file file_RESULTS : text;
+    file file_in : text;
+    file file_results : text;
 
     -- stimulus signals
-    signal clk : std_logic := 0;
+    signal clk : std_logic := '0';
     signal reset : std_logic;
 
+    signal instruction_in : std_logic_vector(INSTR_WIDTH-1 downto 0);
+    signal load : std_logic;
+    signal done_loading : std_logic := '0';
 
-    signal i3,i2,Instruction_Intb,Load_tb : std_logic;
-    signal exec, done : std_logic;
+    signal num_instructions : integer range 0 to INSTR_BUF_SIZE := 0;
+    signal cycle_number : integer range 0 to INSTR_BUF_SIZE*2 := 0;
+    signal done_executing : std_logic := '0';
+
 
     -- observed signals
-    signal y_tb: std_logic;
 
 begin
-    UUT : entity Processor port map (
+
+    
+
+    UUT: entity Processor port map (
             clk=>clk,
             reset=>reset,
-            load=>,
-            instruction_in=>
+            load=>load,
+            instruction_in=>instruction_in
         );
 	
-    ReadingFile :process
-        variable v_ILINE     : line;
-        variable v_OLINE     : line;
-        variable v_ADD_TERM : std_logic_vector(24 downto 0);
+    ReadingFile: process
+        variable instr_line : line;
+        variable instruction : std_logic_vector(24 downto 0);
+        variable counter : integer range 0 to INSTR_BUF_SIZE-1 := 0;
     begin
-        file_open(file_VECTORS, "binary_output.txt",  read_mode);
+        file_open(file_in, "binary_output.txt",  read_mode);
+        load <= '1';
 
-        Load_tb <= '1';
+        reset <= '1';--, '0' after 2 * period;
 
-        while not endfile(file_VECTORS) loop
-            readline(file_VECTORS, v_ILINE);
-            read(v_ILINE, v_ADD_TERM);
+        wait for period*2;
 
-            Instruction_tb <= v_ADD_TERM;
-            r_ADD_TERM2 <= v_ADD_TERM2;
+        reset <= '0';
 
+        while not endfile(file_in) loop
+            -- Read line from file and then read 0's and 1's into instruction signal
+            readline(file_in, instr_line);
+            read(instr_line, instruction);
 
+            instruction_in <= instruction;
+
+            num_instructions <= num_instructions + 1;
+            wait until rising_edge(clk);
         end loop;
+
+        load <= '0';
+        reset <= '1';
+        wait for period*2;
+        reset <= '0';
+
+        wait for period/2;
+
+        done_loading <= '1';
 
         wait;
     end process ReadingFile;
     
     WritingResults: process
+        variable result_line : line;
     begin
-        file_open(file_RESULTS, "output_results.txt", write_mode);
+        file_open(file_results, "output_results.txt", write_mode);
+        
+        
+        while not (done_executing='1') loop
+            if (done_loading='1') then
+                write(result_line, string'("Cycle ") & integer'image(cycle_number) & string'(":"));
+                writeline(file_results, result_line);
 
-        write(v_OLINE, ,);
-        writeline(file_RESULTS, v_OLINE);
-        file_close(file_RESULTS);
+                -- write(result_line, out_data);
+                -- writeline(file_results, result_line);
+            end if;
+            wait until rising_edge(clk);
+        end loop;
+        
+        wait;
     end process WritingResults;
+
+    count_cycles: process
+    begin
+        while (cycle_number < num_instructions + 3) loop
+            if (done_loading = '1') then
+                cycle_number <= cycle_number + 1;
+            end if;
+            wait until rising_edge(clk);
+        end loop;
+
+        done_executing <= '1';
+
+        wait;
+    end process count_cycles;
 
     clock: process
     begin
@@ -99,8 +146,8 @@ begin
             clk <= not clk;
         end loop;
         
-        file_close(file_VECTORS);
-        file_close(file_RESULTS);
+        file_close(file_in);
+        file_close(file_results);
 
         wait;
     end process;

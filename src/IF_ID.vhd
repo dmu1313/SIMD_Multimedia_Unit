@@ -39,16 +39,13 @@ entity IF_ID is
 end IF_ID;
 
 architecture behavior of IF_ID is
-	signal pipeline_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
 begin
 	process(clk, rst)
 	begin
 		if rst = '1' then
 			Ins_Out <= std_logic_vector(to_unsigned(0, INSTR_WIDTH));
-			pipeline_instr <= std_logic_vector(to_unsigned(0, INSTR_WIDTH));
 		elsif rising_edge(clk)	then
-			Ins_Out <= pipeline_instr;
-			pipeline_instr <= Ins_In;
+			Ins_Out <= Ins_In;
 		end if;
    end process;
 end behavior;

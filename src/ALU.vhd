@@ -214,11 +214,11 @@ Instruction:if (Opcode(9)= '0')  then
 					output(127 downto 96):= std_logic_vector(max32);  
 				elsif (tempD < min32 )	then
 					output(127 downto 96):= std_logic_vector(min32);
-				else 
+				else
 					output(127 downto 96):= std_logic_vector(signed(rs1(127 downto 96)) - signed(output(127 downto 96)));
-				end if;	
+				end if;
 			-- Signed Integer Multiply-Subtract HIGH with Saturation:
-			elsif(Opcode(7 downto 5) = "011") then 
+			elsif(Opcode(7 downto 5) = "011") then
 				output(31 downto 0):= std_logic_vector(signed(rs3(31 downto 16)) * signed(rs2(31 downto 16)));  
 				output(63 downto 32):= std_logic_vector(signed(rs3(63 downto 48)) * signed(rs2(63 downto 48))); 
 				output(95 downto 64):= std_logic_vector(signed(rs3(95 downto 80)) * signed(rs2(95 downto 80)));
@@ -243,6 +243,7 @@ Instruction:if (Opcode(9)= '0')  then
 				end if;
 				
 				tempC := resize(signed(rs1(95 downto 64)), 65) - resize(signed(output(95 downto 64)), 65);
+				output := func();
 				if	 (tempC > max32 ) then 
 					output(95 downto 64):= std_logic_vector(max32);  
 				elsif (tempC < min32 )	then
@@ -317,7 +318,7 @@ Instruction:if (Opcode(9)= '0')  then
 					output(63 downto 0):= std_logic_vector(min);
 				else  
 					output(63 downto 0):= std_logic_vector(signed(rs1(63 downto 0)) - signed(output(63 downto 0))); 
-				end if;	  
+				end if;
 			
 				tempB := (rs1(127) & signed(rs1(127 downto 64))) - (output(127) & signed(output(127 downto 64)));
 				if	tempB  > max  then 
@@ -349,14 +350,16 @@ Instruction:if (Opcode(9)= '0')  then
 				else
 					output(127 downto 64):= std_logic_vector(signed(rs1(127 downto 64)) - signed(output(127 downto 64)));
 				end if;	
-				 
+			else
+				output := std_logic_vector(to_unsigned(2, REG_WIDTH));
 			end if R4;
 			
 		-- For other basic operations		   
 		elsif (Opcode(9 downto 8) = "11") then	 
 			R3:if (Opcode(4 downto 0) = "00000") then
-				--Do nothing NOP 
+				--Do nothing NOP
 				--A
+				output := std_logic_vector(to_unsigned(4, REG_WIDTH));
 			elsif (Opcode(4 downto 0) = "00001")	then
 				output(31 downto 0):= std_logic_vector(unsigned(rs1(31 downto 0)) + unsigned(rs2(31 downto 0)));  
 				output(63 downto 32):= std_logic_vector(unsigned(rs1(63 downto 32)) + unsigned(rs2(63 downto 32)));   

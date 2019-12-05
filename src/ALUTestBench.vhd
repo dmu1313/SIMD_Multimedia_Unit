@@ -68,7 +68,7 @@ variable expected : std_logic_vector(127 downto 0);
 	
 			for i in 0 to 7 loop
 			(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5)) <= (to_unsigned(i,3)); 
-			wait for 5ns; 	
+			wait for 5ns;
 			end loop;
 
 --	Opcode_tb <= b"10_000_01001";
