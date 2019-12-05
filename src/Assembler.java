@@ -13,20 +13,19 @@ import java.io.IOException;
 
 public class Assembler {
 	/*
+	 	Instruction formats listed below:
+	 	
 		Load Immediate:
-		
 	        rd	immediate	load index
 		li	r4	1000		3
 		
 		
 		R4 instruction type:
-		
 			rd	rs1	rs2	rs3
 		ial	r5	r4	r3	r3
 		
 		
 		R3 instruction type:
-		
 			rd	rs1	rs2
 		a	r30	r20	r10
 		
@@ -34,7 +33,8 @@ public class Assembler {
 	 */
 	
 	
-	public static final String basePath = Utils.basePath;
+	public static final String basePath =
+			"C:\\Users\\Mu\\Desktop\\Dan's School Files Stony Brook\\Year 4\\ESE 345\\SIMD_Multimedia_Unit\\src\\";
 	
 	public static final String readFile = basePath + "code.txt";
 	public static final String outputFile = basePath + "binary_output.txt";
@@ -279,39 +279,4 @@ public class Assembler {
 		System.out.println("Failed to get index of instruction.");
 		return -1;
 	}
-	
-	
-	
-	/*
-    public static void main(String [] args) {
-    	System.out.println(getRegister("15"));
-    	System.out.println(getRegister("16"));
-    	System.out.println(getRegister("1"));
-    	System.out.println(getRegister("0"));
-    	System.out.println(getRegister("3"));
-    	System.out.println(getRegister("-1"));
-    	System.out.println(getRegister("17"));
-    	
-    	System.out.println("\n\n");
-    	
-    	System.out.println(getLoadIndex("0"));
-    	System.out.println(getLoadIndex("1"));
-    	System.out.println(getLoadIndex("2"));
-    	System.out.println(getLoadIndex("3"));
-    	System.out.println(getLoadIndex("4"));
-    	System.out.println(getLoadIndex("5"));
-    	System.out.println(getLoadIndex("6"));
-    	System.out.println(getLoadIndex("7"));
-    	
-    	System.out.println("\n\n");
-    	
-    	System.out.println(getImmediate("32767"));
-    	System.out.println(getImmediate("32768"));
-    	System.out.println(getImmediate("0"));
-    	System.out.println(getImmediate("-1"));
-    	System.out.println(getImmediate("4"));
-    	System.out.println(getImmediate("8"));
-    	System.out.println(getImmediate("17"));
-    }
-	 */
 }
