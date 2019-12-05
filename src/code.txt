@@ -1,6 +1,7 @@
-li r1 24789 0
-li r2 32767 0
-nop
-A r3 r1 r2
-nop
-AND r4 r3 r1
+li r1 3 0
+li r3 5 0
+A r2 r1 r3
+li r3 64 0
+li r10 1 0
+bcw r10 r10 r0
+shlhi r10 r10 r4

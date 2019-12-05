@@ -20,7 +20,7 @@ begin
 	process(clk, rst)
 	begin
 		if rst = '1' then
-			Ins_Out <= std_logic_vector(to_unsigned(0, INSTR_WIDTH));
+			Ins_Out <= b"11_111_11111_00000_00000_00000";--std_logic_vector(to_unsigned(0, INSTR_WIDTH));
 		elsif rising_edge(clk)	then
 			Ins_Out <= Ins_In;
 		end if;

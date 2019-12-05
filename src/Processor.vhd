@@ -48,6 +48,8 @@ architecture Processor of Processor is
 	signal EX_WB_instr_out : std_logic_vector(INSTR_WIDTH-1 downto 0);
 	signal EX_WB_instr_out_r3_op : unsigned(R3_OPCODE_WIDTH-1 downto 0);
 
+	signal rs2_in_forward_unit : std_logic_vector(REG_WIDTH-1 downto 0);
+	signal rs2_is_immediate : std_logic;
 
 begin
 	u1: entity Program_Counter port map(clk=>clk, reset=>reset, addr=>addr);
@@ -87,32 +89,25 @@ begin
 	u5: entity ID_EX port map(
 			clk=>clk,
 			rst=>reset,
-			-- rs1_In=>rs1_out,
-			-- rs2_In=>rs2_out,
-			-- rs3_In=>rs3_out,
 			Ins_In=>IF_ID_instr_out,
 			Ins_Out=>ID_EX_instr_out
-			-- rs1_Out=>ID_EX_rs1_out,
-			-- rs2_Out=>ID_EX_rs2_out,
-			-- rs3_Out=>ID_EX_rs3_out
 		);
 
 	alu_inputs: process(all)
 	begin
-		ALU_rd_in <= ID_EX_rs1_out;
-		ALU_rs1_in <= ID_EX_rs1_out;
-		ALU_rs3_in <= ID_EX_rs3_out;
-		
 		ALU_opcode <= ID_EX_instr_out(INSTR_WIDTH-1 downto INSTR_WIDTH-10);
 
 		if (ID_EX_instr_out(24) = '0') then
 			-- load immediate
-			ALU_rs2_in <= std_logic_vector(resize(signed(ID_EX_instr_out(20 downto 5)), ALU_rs2_in'length));
+			rs2_is_immediate <= '1';
+			rs2_in_forward_unit <= std_logic_vector(resize(signed(ID_EX_instr_out(20 downto 5)), ALU_rs2_in'length));
 		elsif (ID_EX_instr_out(24 downto 15) = b"11_0000_1111") then
 			-- shlhi
-			ALU_rs2_in <= std_logic_vector(resize(signed(ID_EX_instr_out(13 downto 10)), ALU_rs2_in'length));
+			rs2_is_immediate <= '1';
+			rs2_in_forward_unit <= std_logic_vector(resize(signed(ID_EX_instr_out(13 downto 10)), ALU_rs2_in'length));
 		else
-			ALU_rs2_in <= ID_EX_rs2_out;
+			rs2_is_immediate <= '0';
+			rs2_in_forward_unit <= ID_EX_rs2_out;
 		end if;
 	end process alu_inputs;
 
@@ -137,7 +132,7 @@ begin
 	EX_WB_instr_out_r3_op <= unsigned(EX_WB_instr_out(22 downto 15));
 	write_sel <= EX_WB_instr_out(4 downto 0);
 
-	write_enable <= '1' when (not (EX_WB_instr_out = std_logic_vector(to_unsigned(0, INSTR_WIDTH))) ) and
+	write_enable <= '1' when --(not (EX_WB_instr_out = std_logic_vector(to_unsigned(0, INSTR_WIDTH))) ) and
 							(
 								(EX_WB_instr_out(24) = '0')
 								or (EX_WB_instr_out(24 downto 23) = "10")
@@ -147,6 +142,28 @@ begin
 																											) else
 					'0';
 
-	-- u8: entity Forwarding_Unit port map(clk=>clk, reset_bar=>reset_bar, d=>step, q=>triangle_output);
+	u8: entity Forwarding_Unit port map(
+		op=>ID_EX_instr_out(24 downto 23),
+		rd_sel=>ID_EX_instr_out(4 downto 0),
+		rs1_sel=>ID_EX_instr_out(9 downto 5),
+		rs2_sel=>ID_EX_instr_out(14 downto 10),
+		rs3_sel=>ID_EX_instr_out(19 downto 15),
+
+		rd_in=>ID_EX_rs1_out,
+		rs1_in=>ID_EX_rs1_out,
+		rs2_in=>rs2_in_forward_unit,
+		rs3_in=>ID_EX_rs3_out,
+
+		rs2_is_immediate=>rs2_is_immediate,
+
+		wr_en_rd=>write_enable,
+		rd_wb_sel=>write_sel,
+		data_foward=>write_data, 
+		
+		rs1_out=>ALU_rs1_in,
+		rs2_out=>ALU_rs2_in,
+		rs3_out=>ALU_rs3_in,
+		rd_out=>ALU_rd_in
+	);
 
 end Processor;

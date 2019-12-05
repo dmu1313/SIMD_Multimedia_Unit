@@ -220,7 +220,6 @@ Instruction:if (Opcode(9)= '0')  then
 				end if;
 				
 				tempC := resize(signed(rs1(95 downto 64)), 65) - resize(signed(output(95 downto 64)), 65);
-				output := func();
 				if	 (tempC > max32 ) then 
 					output(95 downto 64):= std_logic_vector(max32);  
 				elsif (tempC < min32 )	then
