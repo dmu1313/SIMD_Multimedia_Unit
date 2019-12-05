@@ -21,7 +21,7 @@ end ALU;
 architecture behavior of ALU is
 begin
 	
-	process(rs1, rs2, rs3, Opcode)
+	process(all)
 	variable output: STD_logic_vector(127 downto 0);	
 	variable temp : std_logic;
 	variable tempA , tempB , tempC, tempD, tempE, tempF, tempG, tempH: signed (64 downto 0);

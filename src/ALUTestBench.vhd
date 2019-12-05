@@ -36,7 +36,7 @@ architecture ALUTestBench of ALUTestBench is
 		rd_tb 	<= b"0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000";
 		
 		Opcode_tb <= "0000010000";	
-		wait for 5ns;
+		wait for 5ns;  
 		
 		Opcode_tb(9 downto 8) <="10"; 
 		Opcode_tb(4 downto 0) <="00000";
@@ -55,6 +55,6 @@ architecture ALUTestBench of ALUTestBench is
 			
 			expected:= c_tb;
 		end loop;
---	wait;
+	wait;
 	end process stim;
 end ALUTestBench;

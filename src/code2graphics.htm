@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!----------------------------------------------------------------------------->
+<!--                          BEGIN HTML HEAD                                -->
+<!--                                                                         -->
+
+<HEAD>
+<TITLE>Code2Graphics generation results</TITLE>
+<STYLE>
+.Err	{color:#FF0000;cursor:hand;text-decoration:underline;}
+.Warn	{color:#0000FF;cursor:hand;text-decoration:underline;}
+.Info	{color:#000000;cursor:hand;text-decoration:underline;}
+.Sccss  {color:#009600;cursor:hand;text-decoration:underline;}
+.ErrH	{color:#FF0000;cursor:hand;text-decoration:underline;}
+.WarnH	{color:#0000FF;cursor:hand;text-decoration:underline;}
+.InfoH	{color:#000000;cursor:hand;text-decoration:underline;}
+.Err1	{color:#FF0000;}
+.Warn1	{color:#0000FF;}
+.Info1	{color:#000000;}
+.Sccss1 {color:#009600;}
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" VLINK="purple" BACKGROUND="C:\Aldec\Active-HDL-Student-Edition\\Flows\Res\default.bmp">
+<FONT FACE="Serif">
+<tt>
+<!--                                                                         -->
+<!--                             END HEADER                                  -->
+<!----------------------------------------------------------------------------->
+
+<!----------------------------------------------------------------------------->
+<!--                            BEGIN VBSCRIPT                               -->
+<!--                                                                         -->
+<SCRIPT LANGUAGE=JSCRIPT>
+	function RollOn() {
+		switch(window.event.srcElement.className) {
+			case 'Err':
+				window.event.srcElement.className = 'ErrH'; break;
+			case 'Warn':
+				window.event.srcElement.className = 'WarnH'; break;
+			case 'Info':
+				window.event.srcElement.className = 'InfoH'; break;
+		}
+	}
+	function RollOff() {
+		switch(window.event.srcElement.className) {
+			case 'ErrH':
+				window.event.srcElement.className = 'Err'; break;
+			case 'WarnH':
+				window.event.srcElement.className = 'Warn'; break;
+			case 'InfoH':
+				window.event.srcElement.className = 'Info'; break;
+		}
+	}
+	function OnError(sMsg,sUrl,sLine) {
+		return true;
+	}
+	
+	document.onmouseover = RollOn;
+	document.onmouseout = RollOff;
+	window.onerror = OnError;
+</SCRIPT>
+
+<SCRIPT LANGUAGE=VBSCRIPT>
+
+Function IID_IDispatch
+	IID_IDispatch = "{00020400-0000-0000-C000-000000000046}"
+End Function
+
+Function CLSID_Executor
+	CLSID_Executor = "Aldec.ExePlugIn.Generic.7"
+End Function
+
+
+Sub OpenPlugIn (progid, template, document, element, string)
+
+	Dim executor, command
+
+	Set executor = window.external.aldec.connector.OpenPlugIn(CLSID_Executor, IID_IDispatch)
+
+	command = "?Activate[<"+progid+">][<"+template+">][<"+document+">][<"+element+">][<"+string+">]"
+
+	executor.ExecuteCommand command, ""
+
+End Sub
+
+
+</SCRIPT>
+<!--                                                                         -->
+<!--                             END VBSCRIPT                                -->
+<!----------------------------------------------------------------------------->
+
+<H2>Code2Graphics generation results</H2>
+
+Created on Thu 2019-12-05 at 03:08:10
+<HR NOSHADE COLOR="#008080">
+<SPAN class=Info1>CODE2GRAPHICS SETTINGS:</SPAN><BR>
+<SPAN class=Info1> </SPAN><BR>
+<SPAN class=Info1>Multipage block diagrams generation: DISABLED</SPAN><BR>
+<SPAN class=Info1>Hierarchical state diagrams generation: DISABLED</SPAN><BR>
+<SPAN class=Info1> </SPAN><BR>
+<SPAN class=Info1>INTERMEDIATE FILES GENERATION:</SPAN><BR>
+<SPAN class=Info1> </SPAN><BR>
+<SPAN class=Info1>Analyzing intermediate file C:\Users\donal\AppData\Local\Temp\simd_multimedia_unit\simd_multimedia_unit.erf ...</SPAN><BR>
+<SPAN class=Info1>File: C:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\Processor.vhd</SPAN><BR>
+<SPAN class=Info1>Checking Entity &quot;Processor&quot;</SPAN><BR>
+<SPAN class=Info1>Checking Architecture &quot;Processor&quot; of Entity &quot;Processor&quot;</SPAN><BR>
+<SPAN class=Sccss1>Checking success 0 Errors 0 Warnings&nbsp;Analysis time :&nbsp;0.2 [s]</SPAN><BR>
+<SPAN class=Info1>Finished successfully.</SPAN><BR>
+<SPAN class=Info1> </SPAN><BR>
+<SPAN class=Info1>DIAGRAM FILES GENERATION:</SPAN><BR>
+<SPAN class=Info1> </SPAN><BR>
+<SPAN class=Warn1>Cannot convert .\..\src\Processor.vhd to state diagram because a state machine pattern could not be recognized.<BR></SPAN><BR>
+<SPAN class=Info1>Generating temporary block diagram file C:\Users\donal\AppData\Local\Temp\109AAE3.tmp ...<BR>Temporary block diagram file has been successfully generated.<BR></SPAN><BR>
+<SPAN class=Info1>Diagram file(s) generation completed in 5.515 seconds.<BR></SPAN><BR>
+<SPAN class=Info1 onclick="OpenPlugIn('Aldec.BDE.7','0','c:\\My_Designs\\Ese_345\\SIMD_Multimedia_Unit\\src\\Processor.bde','','');">File <SPAN class=Info>c:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\Processor.bde</SPAN> has been successfully generated.</SPAN><BR>
+<SPAN class=Info1> </SPAN><BR>
+<SPAN class=Info1>1 unit(s) converted to Block Diagram(s)</SPAN><BR>
+<SPAN class=Info1>0 unit(s) converted to State Diagram(s)</SPAN><BR>
+</tt>
+</FONT>
+</BODY>
+
+</HTML>
