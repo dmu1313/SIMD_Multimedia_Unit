@@ -512,41 +512,57 @@ Instruction:if (Opcode(9)= '0')  then
 					output(127 downto 96):= rs2(127 downto 96);
 				end if;	
 				--MSGN
-			elsif (Opcode(4 downto 0) = "01001")	then
-				 tempA := resize(signed(rs1(31 downto 0)) * signed(rs2(31 downto 0)), 65);	
+			elsif (Opcode(4 downto 0) = "01001")	then		  
+				if (rs2(31) = '1') then
+					tempA := resize(signed(rs1(31 downto 0)) * to_signed(-1, 32), 65);
+				else
+					tempA := resize(signed(rs1(31 downto 0)) * to_signed(1, 32), 65);
+				end if;	
 				if tempA > max32 then
 				   output(31 downto 0):= std_logic_vector(max32);
 				elsif tempA < min32 then 
 				   output(31 downto 0):= std_logic_vector(min32);
 				else 
-				 output(31 downto 0):= std_logic_vector(to_signed(to_integer(signed(rs1(31 downto 0))) * to_integer(signed(rs2(31 downto 0))), 32)); 
+				 output(31 downto 0):= std_logic_vector(resize(tempA, 32)); 
 				end if; 
 				
-				tempB := resize(signed(rs1(62 downto 32)) * signed(rs2(62 downto 32)), 65);	
+				if (rs2(63) = '1') then
+					tempB := resize(signed(rs1(63 downto 32)) * to_signed(-1, 32), 65);
+				else
+					tempB := resize(signed(rs1(63 downto 32)) * to_signed(1, 32), 65);
+				end if;
 				if tempB > max32 then
 				   output(63 downto 32):= std_logic_vector(max32);
 				elsif tempB < min32 then 
 				   output(63 downto 32):= std_logic_vector(min32);
 				else 
-				 output(63 downto 32):= std_logic_vector(to_signed(to_integer(signed(rs1(63 downto 32))) * to_integer(signed(rs2(63 downto 32))), 32)); 
+				 output(63 downto 32):= std_logic_vector(resize(tempB, 32)); 
 				end if;  
 				
-				tempC := resize(signed(rs1(95 downto 64)) * signed(rs2(95 downto 64)), 65);	
+				if (rs2(95) = '1') then
+					tempC := resize(signed(rs1(95 downto 64)) * to_signed(-1, 32), 65);
+				else
+					tempC := resize(signed(rs1(95 downto 64)) * to_signed(1, 32), 65);
+				end if;
 				if tempC > max32 then
 				   output(95 downto 64):= std_logic_vector(max32);
 				elsif tempC < min32 then 
 				   output(95 downto 64):= std_logic_vector(min32);
 				else 
-				 output(95 downto 64):= std_logic_vector(to_signed(to_integer(signed(rs1(95 downto 64))) * to_integer(signed(rs2(95 downto 64))), 32)); 
-				end if; 
+				 output(95 downto 64):= std_logic_vector(resize(tempC, 32)); 
+				end if;   
 				
-				tempD := resize(signed(rs1(127 downto 96)) * signed(rs2(127 downto 96)), 65);	
+				if (rs2(127) = '1') then
+					tempD := resize(signed(rs1(127 downto 96)) * to_signed(-1, 32), 65);
+				else
+					tempD := resize(signed(rs1(127 downto 96)) * to_signed(1, 32), 65);
+				end if;	
 				if tempD > max32 then
 				   output(127 downto 96):= std_logic_vector(max32);
 				elsif tempD < min32 then 
 				   output(127 downto 96):= std_logic_vector(min32);
 				else 
-				  output(127 downto 96):= std_logic_vector(to_signed(to_integer(signed(rs1(127 downto 96))) * to_integer(signed(rs2(127 downto 96))), 32)); 
+				  output(127 downto 96):= std_logic_vector(resize(tempD, 32)); 
 				end if;  				
 				--MPYU
 			elsif (Opcode(4 downto 0) = "01010")	then
