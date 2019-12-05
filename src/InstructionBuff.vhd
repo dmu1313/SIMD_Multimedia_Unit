@@ -1,26 +1,3 @@
--------------------------------------------------------------------------------
---
--- Title       : Instruction_Buffer
--- Design      : SIMD_Multimedia_Unit
--- Author      : Brian Eng
--- Company     : StonyBrook
---
--------------------------------------------------------------------------------
---
--- File        : c:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\InstructionBuff.vhd
--- Generated   : Sat Nov 30 18:05:02 2019
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
---
--------------------------------------------------------------------------------
-
---{{ Section below this comment is automatically maintained
---   and may be overwritten
---{entity {Instruction_Buffer} architecture {Instruction_Buffer}}
 
 library IEEE;
 use IEEE.std_logic_1164.all; 

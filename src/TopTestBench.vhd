@@ -1,22 +1,3 @@
--------------------------------------------------------------------------------
---
--- Title       : TopTestBench
--- Design      : SIMD_Multimedia_Unit
--- Author      : Brian Eng
--- Company     : StonyBrook
---
--------------------------------------------------------------------------------
---
--- File        : c:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\TopTestBench.vhd
--- Generated   : Sun Dec  1 21:02:51 2019
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
---
--------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.std_logic_1164.all; 
@@ -58,9 +39,6 @@ architecture TopTestBench of TopTestBench is
     -- observed signals
 
 begin
-
-    
-
     UUT: entity Processor port map (
             clk=>clk,
             reset=>reset,
@@ -151,6 +129,4 @@ begin
 
         wait;
     end process;
-
-
 end TopTestBench;

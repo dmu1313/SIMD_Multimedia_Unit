@@ -1,26 +1,3 @@
--------------------------------------------------------------------------------
---
--- Title       : IF_ID
--- Design      : SIMD_Multimedia_Unit
--- Author      : Brian Eng
--- Company     : StonyBrook
---
--------------------------------------------------------------------------------
---
--- File        : c:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\IF_ID.vhd
--- Generated   : Sun Dec  1 19:00:03 2019
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
---
--------------------------------------------------------------------------------
-
---{{ Section below this comment is automatically maintained
---   and may be overwritten
---{entity {IF_ID} architecture {IF_ID}}
 
 library IEEE;
 use IEEE.std_logic_1164.all; 

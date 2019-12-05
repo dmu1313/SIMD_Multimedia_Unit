@@ -1,26 +1,3 @@
--------------------------------------------------------------------------------
---
--- Title       : ALUTestBench
--- Design      : SIMD_Multimedia_Unit
--- Author      : Brian Eng
--- Company     : StonyBrook
---
--------------------------------------------------------------------------------
---
--- File        : c:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\ALUTestBench.vhd
--- Generated   : Sun Dec  1 23:01:12 2019
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
---
--------------------------------------------------------------------------------
-
---{{ Section below this comment is automatically maintained
---   and may be overwritten
---{entity {ALUTestBench} architecture {ALUTestBench}}
 
 library IEEE;
 use IEEE.std_logic_1164.all; 
@@ -28,8 +5,6 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity ALUTestBench is
 end ALUTestBench;
-
---}} End of automatically maintained section
 
 architecture ALUTestBench of ALUTestBench is
 
@@ -52,34 +27,34 @@ architecture ALUTestBench of ALUTestBench is
 	Opcode => Opcode_tb,
 	c => c_tb);	
 
-stim:process
-variable expected : std_logic_vector(127 downto 0);
+	stim:process
+		variable expected : std_logic_vector(127 downto 0);
 	begin
-	rs1_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101";
-	rs2_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101"; 
-	rs3_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101";
-	rd_tb 	<= b"0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000";
+		rs1_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101";
+		rs2_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101"; 
+		rs3_tb	<= b"0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101_0000000000000101";
+		rd_tb 	<= b"0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000_0000000000000000";
+		
+		Opcode_tb <= "0000010000";	
+		wait for 5ns;
+		
+		Opcode_tb(9 downto 8) <="10"; 
+		Opcode_tb(4 downto 0) <="00000";
 	
-	Opcode_tb <= "0000010000";	
-	wait for 5ns;
-	
-	Opcode_tb(9 downto 8) <="10"; 
-	Opcode_tb(4 downto 0) <="00000";
-	
-			for i in 0 to 7 loop
+		for i in 0 to 7 loop
 			(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5)) <= (to_unsigned(i,3)); 
 			wait for 5ns;
-			end loop;
+		end loop;
 
 --	Opcode_tb <= b"10_000_01001";
 
-	Opcode_tb(9 downto 8) <="11";  
-			for i in 1 to 19 loop
-				(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5), Opcode_tb(4), Opcode_tb(3), Opcode_tb(2), Opcode_tb(1), Opcode_tb(0)) <= (to_unsigned(i,8)); 
-				wait for 5ns;
-				
-				expected:= c_tb;
-			end loop;
+		Opcode_tb(9 downto 8) <="11";  
+		for i in 1 to 19 loop
+			(Opcode_tb(7), Opcode_tb(6), Opcode_tb(5), Opcode_tb(4), Opcode_tb(3), Opcode_tb(2), Opcode_tb(1), Opcode_tb(0)) <= (to_unsigned(i,8)); 
+			wait for 5ns;
+			
+			expected:= c_tb;
+		end loop;
 --	wait;
 	end process stim;
 end ALUTestBench;

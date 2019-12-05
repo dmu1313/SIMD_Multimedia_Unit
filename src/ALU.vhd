@@ -1,26 +1,3 @@
--------------------------------------------------------------------------------
---
--- Title       : ALU
--- Design      : Microprocessor
--- Author      : Brian Eng
--- Company     : StonyBrook
---
--------------------------------------------------------------------------------
---
--- File        : c:\My_Designs\Ese_345\Microprocessor\src\ALU.vhd
--- Generated   : Sat Oct 26 19:28:49 2019
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
---
--------------------------------------------------------------------------------
-
---{{ Section below this comment is automatically maintained
---   and may be overwritten
---{entity {ALU} architecture {ALU}}
 
 library IEEE;
 use IEEE.std_logic_1164.all; 

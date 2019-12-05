@@ -1,26 +1,3 @@
--------------------------------------------------------------------------------
---
--- Title       : RegFile
--- Design      : SIMD_Multimedia_Unit
--- Author      : Brian Eng
--- Company     : StonyBrook
---
--------------------------------------------------------------------------------
---
--- File        : c:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\RegFile.vhd
--- Generated   : Sat Nov 30 17:23:49 2019
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
---
--------------------------------------------------------------------------------
-
---{{ Section below this comment is automatically maintained
---   and may be overwritten
---{entity {RegFile} architecture {RegFile}}
 
 library IEEE;
 use IEEE.std_logic_1164.all; 
@@ -51,8 +28,7 @@ entity RegFile is
 	);
 end RegFile;
 
-
-architecture behavior of RegFile is	 
+architecture behavior of RegFile is
 	type RegisterFile is array (0 to NUM_REGISTERS-1) of STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);
 	signal registers  : RegisterFile;
 begin

@@ -1,18 +1,3 @@
--------------------------------------------------------------------------------
---
--- Title       : EX_WB
--- Design      : SIMD_Multimedia_Unit
--- Author      : Brian Eng
--- Company     : StonyBrook
---
--------------------------------------------------------------------------------
---
--- File        : c:\My_Designs\Ese_345\SIMD_Multimedia_Unit\src\EX_WB.vhd
--- Generated   : Sun Dec  1 19:21:32 2019
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
-
 
 library IEEE;
 use IEEE.std_logic_1164.all; 
