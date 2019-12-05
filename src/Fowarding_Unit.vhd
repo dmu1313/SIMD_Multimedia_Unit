@@ -45,41 +45,30 @@ begin
 	begin
 		forwarded_reg <= rd_wb_sel;
 
+		forwarding_event_occurred <= '0';
+		rs1_out <= rs1_in;
+		rs2_out <= rs2_in;
+		rs3_out <= rs3_in;
+		rd_out <= rd_in;
+
 		if (wr_en_rd = '1' and rd_wb_sel = rs1_sel and (op = "10" or op = "11")) then
 			forwarding_event_occurred <= '1';
-
 			rs1_out <= data_foward;
-			rs2_out <= rs2_in;
-			rs3_out <= rs3_in;
-			rd_out <= rd_in;
-		elsif(rs2_is_immediate='0' and wr_en_rd = '1' and rd_wb_sel = rs2_sel and (op = "10" or op = "11")) then
-			forwarding_event_occurred <= '1';
+		end if;
 
-			rs1_out <= rs1_in;
+		if(rs2_is_immediate='0' and wr_en_rd = '1' and rd_wb_sel = rs2_sel and (op = "10" or op = "11")) then
+			forwarding_event_occurred <= '1';
 			rs2_out <= data_foward;
-			rs3_out <= rs3_in;
-			rd_out <= rd_in;
-		elsif(wr_en_rd = '1' and rd_wb_sel = rs3_sel and op = "10") then
+		end if;
+		
+		if(wr_en_rd = '1' and rd_wb_sel = rs3_sel and op = "10") then
 			forwarding_event_occurred <= '1';
-
-			rs1_out <= rs1_in;
-			rs2_out <= rs2_in;
 			rs3_out <= data_foward;
-			rd_out <= rd_in;
-		elsif(wr_en_rd = '1' and rd_wb_sel = rd_sel and op(1) = '0')	then
-			forwarding_event_occurred <= '1';
-			
-			rs1_out <= rs1_in;
-			rs2_out <= rs2_in;
-			rs3_out <= rs3_in;
-			rd_out <= data_foward;
-		else
-			forwarding_event_occurred <= '0';
+		end if;
 
-			rs1_out <= rs1_in;
-			rs2_out <= rs2_in;
-			rs3_out <= rs3_in;
-			rd_out <= rd_in;
+		if(wr_en_rd = '1' and rd_wb_sel = rd_sel and op(1) = '0')	then
+			forwarding_event_occurred <= '1';
+			rd_out <= data_foward;
 		end if;	
 	end process;
 end	behavior;

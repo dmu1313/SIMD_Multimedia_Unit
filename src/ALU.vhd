@@ -21,7 +21,7 @@ end ALU;
 architecture behavior of ALU is
 begin
 	
-	process(rs1, rs2, rs3, Opcode)
+	process(all)
 	variable output: STD_logic_vector(127 downto 0);	
 	variable temp : std_logic;
 	variable tempA , tempB , tempC, tempD, tempE, tempF, tempG, tempH: signed (64 downto 0);
@@ -46,7 +46,7 @@ begin
 Instruction:if (Opcode(9)= '0')  then
 			--Load Immediate based on index
 			output := rd;
-			if (Opcode(8 downto 6) = "000")then
+			if (Opcode(8 downto 6) = "000") then
 				output(15 downto 0):= rs2(15 downto 0);
 			elsif (Opcode(8 downto 6) = "001")then
 				output(31 downto 16):= rs2(15 downto 0); 

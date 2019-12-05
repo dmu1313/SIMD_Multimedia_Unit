@@ -138,7 +138,7 @@ begin
 
         -- loop through register file and output register file
         for i in 1 to NUM_REGISTERS loop
-            write(result_line, string'("r") & integer'image(i) & string'(": ") & to_hstring(
+            write(result_line, string'("r") & integer'image(i-1) & string'(": ") & to_hstring(
                     registers((i*REG_WIDTH)-1 downto ((i-1)*REG_WIDTH))
                 ));
             writeline(file_results, result_line);
