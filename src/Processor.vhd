@@ -10,6 +10,7 @@ entity Processor is
 		INSTR_BUF_SIZE : positive := 64;
 		INSTR_WIDTH : positive := 25;
 		LOG_NUM_REG : positive := 5;
+		NUM_REGISTERS : positive := 32;
 		REG_WIDTH : positive := 128;
 		ALU_OP_WIDTH : positive := 10;
 		R3_OPCODE_WIDTH : positive := 8
@@ -18,12 +19,20 @@ entity Processor is
 			clk : in std_logic;
 			reset : in std_logic;
 			load : in std_logic;
-			instruction_in : in std_logic_vector(INSTR_WIDTH-1 downto 0)
+			instruction_in : in std_logic_vector(INSTR_WIDTH-1 downto 0);
 
+			-- These output signals are simply used by the testbench for writing the state of the CPU to a file.
+			IF_instr : out std_logic_vector(INSTR_WIDTH-1 downto 0);
+			ID_instr : out std_logic_vector(INSTR_WIDTH-1 downto 0);
+			EX_instr : out std_logic_vector(INSTR_WIDTH-1 downto 0);
+			WB_instr : out std_logic_vector(INSTR_WIDTH-1 downto 0);
+			registers : out STD_LOGIC_VECTOR((NUM_REGISTERS*REG_WIDTH)-1 downto 0);
+			forwarding_event_occurred : out std_logic;
+			forwarded_reg : out std_logic_vector(LOG_NUM_REG-1 downto 0)
 		);
 end Processor;
 
-architecture Processor of Processor is			  
+architecture Processor of Processor is
 	constant NOP_BINARY : std_logic_vector(INSTR_WIDTH-1 downto 0) := b"1_1000_0000_0000_0000_0000_0000";
 
 	signal addr : std_logic_vector (n-1 downto 0);
@@ -52,6 +61,12 @@ architecture Processor of Processor is
 	signal rs2_is_immediate : std_logic;
 
 begin
+
+	IF_instr <= instruction_out;
+	ID_instr <= IF_ID_instr_out;
+	EX_instr <= ID_EX_instr_out;
+	WB_instr <= EX_WB_instr_out;
+
 	u1: entity Program_Counter port map(clk=>clk, reset=>reset, addr=>addr);
 
 	u2: entity Instruction_Buffer port map(
@@ -79,7 +94,8 @@ begin
 			write_data=>write_data,
 			write_enable=>write_enable,
 			write_sel=>write_sel,
-			rs1_out=>rs1_out, rs2_out=>rs2_out, rs3_out=>rs3_out
+			rs1_out=>rs1_out, rs2_out=>rs2_out, rs3_out=>rs3_out,
+			output_reg_file=>registers
 		);
 
 	ID_EX_rs1_out <= rs1_out;
@@ -163,7 +179,10 @@ begin
 		rs1_out=>ALU_rs1_in,
 		rs2_out=>ALU_rs2_in,
 		rs3_out=>ALU_rs3_in,
-		rd_out=>ALU_rd_in
+		rd_out=>ALU_rd_in,
+
+		forwarding_event_occurred=>forwarding_event_occurred,
+		forwarded_reg=>forwarded_reg
 	);
 
 end Processor;

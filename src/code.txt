@@ -1,16 +1,18 @@
 li r1 5 0
+li r1 5 1
 li r2 5 0
+li r2 5 1
 bcw r1 r1 r0
 bcw r2 r2 r0
-ial r4 r1 r2
-iah r5 r1 r2
-isl r6 r1 r2
-ish r7 r1 r2
-lal r8 r1 r2
-lah r9 r1 r2
-lsl r10 r1 r2
-lsh r11 r1 r2
-nop r12 r1 r2
+ial r4 r1 r2 r1
+iah r5 r1 r2 r1
+isl r6 r1 r2 r1
+ish r7 r1 r2 r1
+lal r8 r1 r2 r1
+lah r9 r1 r2 r1
+lsl r10 r1 r2 r1
+lsh r11 r1 r2 r1
+nop
 a r13 r1 r2
 ah r14 r1 r2
 ahs r15 r1 r2
@@ -23,7 +25,7 @@ msgn r21 r1 r2
 mpyu r22 r1 r2
 or r23 r1 r2
 popcnth r24 r1 r0
-rot r25 r1 r2	
+rot r25 r1 r2
 rotw r26 r1 r2
 shlhi r27 r1 r2
 sfh r28 r1 r2

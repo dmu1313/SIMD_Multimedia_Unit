@@ -24,7 +24,9 @@ entity RegFile is
 		write_sel : in STD_LOGIC_VECTOR(LOG_NUM_REG-1 downto 0);
 		rs1_out : out STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);
 		rs2_out : out STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);
-		rs3_out : out STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0)
+		rs3_out : out STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);
+		
+		output_reg_file : out STD_LOGIC_VECTOR((NUM_REGISTERS*REG_WIDTH)-1 downto 0)
 	);
 end RegFile;
 
@@ -32,6 +34,15 @@ architecture behavior of RegFile is
 	type RegisterFile is array (0 to NUM_REGISTERS-1) of STD_LOGIC_VECTOR(REG_WIDTH-1 downto 0);
 	signal registers  : RegisterFile;
 begin
+
+	output_registers: process(all)
+	begin
+		for i in 1 to NUM_REGISTERS loop
+			output_reg_file((i*REG_WIDTH)-1 downto ((i-1)*REG_WIDTH)) <= registers(i-1);
+		end loop;
+	end process output_registers;
+	
+
 	process(clk, reset)
 	begin
 		if (reset = '1') then
