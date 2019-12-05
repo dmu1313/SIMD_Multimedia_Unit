@@ -10,7 +10,8 @@ entity TopTestBench is
 		n : positive := 6;
 		INSTR_BUF_SIZE : positive := 64;
 		INSTR_WIDTH : positive := 25;
-		LOG_NUM_REG : positive := 5;
+        LOG_NUM_REG : positive := 5;
+        NUM_REGISTERS : positive := 32;
 		REG_WIDTH : positive := 128;
 		ALU_OP_WIDTH : positive := 10;
 		R3_OPCODE_WIDTH : positive := 8
@@ -37,13 +38,28 @@ architecture TopTestBench of TopTestBench is
 
 
     -- observed signals
+    signal IF_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
+    signal ID_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
+    signal EX_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
+    signal WB_instr : std_logic_vector(INSTR_WIDTH-1 downto 0);
+    signal registers : STD_LOGIC_VECTOR((NUM_REGISTERS*REG_WIDTH)-1 downto 0);
+    signal forwarding_event_occurred : std_logic;
+    signal forwarded_reg : std_logic_vector(LOG_NUM_REG-1 downto 0);
 
 begin
     UUT: entity Processor port map (
             clk=>clk,
             reset=>reset,
             load=>load,
-            instruction_in=>instruction_in
+            instruction_in=>instruction_in,
+
+            IF_instr=>IF_instr,
+			ID_instr=>ID_instr,
+			EX_instr=>EX_instr,
+			WB_instr=>WB_instr,
+			registers=>registers,
+			forwarding_event_occurred=>forwarding_event_occurred,
+			forwarded_reg=>forwarded_reg
         );
 	
     ReadingFile: process
@@ -94,10 +110,38 @@ begin
                 write(result_line, string'("Cycle ") & integer'image(cycle_number) & string'(":"));
                 writeline(file_results, result_line);
 
-                -- write(result_line, out_data);
-                -- writeline(file_results, result_line);
+                write(result_line, string'("IF Stage has Instruction: ") & to_hstring(IF_instr));
+                writeline(file_results, result_line);
+
+                write(result_line, string'("ID Stage has Instruction: ") & to_hstring(ID_instr));
+                writeline(file_results, result_line);
+
+                write(result_line, string'("EX Stage has Instruction: ") & to_hstring(EX_instr));
+                writeline(file_results, result_line);
+
+                write(result_line, string'("WB Stage has Instruction: ") & to_hstring(WB_instr));
+                writeline(file_results, result_line);
+
+                if (forwarding_event_occurred = '1') then
+                    write(result_line, string'("Forwarding event has occurred! Register r") & integer'image(to_integer(unsigned(forwarded_reg))) & string'(" was forwarded back to the EX stage!"));
+                    writeline(file_results, result_line);
+                end if;
+
+                write(result_line, string'(""));
+                writeline(file_results, result_line);
             end if;
             wait until rising_edge(clk);
+        end loop;
+
+        write(result_line, string'("Register File:"));
+        writeline(file_results, result_line);
+
+        -- loop through register file and output register file
+        for i in 1 to NUM_REGISTERS loop
+            write(result_line, string'("r") & integer'image(i) & string'(": ") & to_hstring(
+                    registers((i*REG_WIDTH)-1 downto ((i-1)*REG_WIDTH))
+                ));
+            writeline(file_results, result_line);
         end loop;
         
         wait;
